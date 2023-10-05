@@ -6,7 +6,7 @@ body:
   attributes:
     value: |
       - Write a descriptive issue title above.
-      - Search [open]() and [closed]() issues to ensure it has not already been reported.
+      - Search [open](https://github.com/godotengine/godot-cpp-template/issues) and [closed](https://github.com/godotengine/godot-cpp-template/issues?q=is%3Aissue+is%3Aclosed) issues to ensure it has not already been reported.
 - type: input
   attributes:
     label: Godot version
