@@ -6,6 +6,9 @@ demo/bin/*
 !demo/bin/*.gdextension
 .sconsign*.dblite
 
+# compiledb
+compile_commands.json
+
 # Binaries
 *.o
 *.os
