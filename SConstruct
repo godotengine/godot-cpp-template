@@ -12,6 +12,7 @@ def validate_parent_dir(key, val, env):
 
 
 libname = "EXTENSION-NAME"
+projectdir = "demo"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
 
@@ -52,19 +53,30 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp")
 
+file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
+
 if env["platform"] == "macos":
     platlibname = "{}.{}.{}".format(libname, env["platform"], env["target"])
-    library = env.SharedLibrary(
-        "bin/{}.framework/{}".format(platlibname, platlibname),
-        source=sources,
-    )
-else:
-    library = env.SharedLibrary(
-        "bin/{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"]),
-        source=sources,
-    )
+    file = "{}.framework/{}".format(env["platform"], platlibname, platlibname)
 
-default_args = [library]
+libraryfile = "bin/{}/{}".format(env["platform"], file)
+library = env.SharedLibrary(
+    libraryfile,
+    source=sources,
+)
+
+
+def copy_bin_to_projectdir(target, source, env):
+    import shutil
+
+    targetfrom = "bin/{}/lib{}".format(env["platform"], file)
+    targetdest = "{}/bin/{}/lib{}".format(projectdir, env["platform"], file)
+    shutil.copyfile(targetfrom, targetdest)
+
+
+copy = env.Command(libraryfile, None, copy_bin_to_projectdir)
+
+default_args = [library, copy]
 if localEnv.get("compiledb", False):
     default_args += [compilation_db]
 Default(*default_args)
