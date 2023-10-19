@@ -12,7 +12,8 @@ This repository serves as a quickstart template for GDExtension development with
 To use this template, log in to github and click the green "Use this template" button at the top of the repository page.
 This will let you create a copy of this repository with a clean git history. Make sure you clone the correct branch as these are configured for development of their respective Godot development branches and differ from each other. Refer to the docs to see what changed between the versions.
 
-For getting started after cloning your own copy to your local machine, you should 
+For getting started after cloning your own copy to your local machine, you should: 
+* initialize the godot-cpp git submodule via `git submodule update --init`
 * change the name of your library
   * change the name of the compiled library file inside the `SConstruct` file by modifying the `libname` string.
   * change the pathnames of the to be loaded library name inside the `demo/bin/example.gdextension` file. By replacing `libgdexample` to the name specified in your `SConstruct` file.
