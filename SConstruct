@@ -65,16 +65,18 @@ library = env.SharedLibrary(
     source=sources,
 )
 
+projectlib = "{}/bin/{}/lib{}".format(projectdir, env["platform"], file)
+
 
 def copy_bin_to_projectdir(target, source, env):
     import shutil
 
-    targetfrom = "bin/{}/lib{}".format(env["platform"], file)
-    targetdest = "{}/bin/{}/lib{}".format(projectdir, env["platform"], file)
-    shutil.copyfile(targetfrom, targetdest)
+    for sourcefile in source:
+        for targetfile in target:
+            shutil.copyfile(sourcefile.get_path(), targetfile.get_path())
 
 
-copy = env.Command(libraryfile, None, copy_bin_to_projectdir)
+copy = env.Command(projectlib, libraryfile, copy_bin_to_projectdir)
 
 default_args = [library, copy]
 if localEnv.get("compiledb", False):
