@@ -1,5 +1,19 @@
 #!/usr/bin/env python
-import os
+
+from sconsutil import *
+
+# libgdextension name
+libname = "gdextension"
+# godot binary to run demo project
+godot_exec = f'godot\\Godot_v4.1.2-stable_win64.exe'
+# godot demo project
+projectdir = "demo"
+# sln filename
+sln_dir = os.getcwd()
+sln_name = os.path.basename(sln_dir)
+
+# default targets
+default_targets = []
 
 
 def normalize_path(val, env):
@@ -10,9 +24,6 @@ def validate_parent_dir(key, val, env):
     if not os.path.isdir(normalize_path(os.path.dirname(val), env)):
         raise UserError("'%s' is not a directory: %s" % (key, os.path.dirname(val)))
 
-
-libname = "EXTENSION-NAME"
-projectdir = "demo"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
 
@@ -35,6 +46,14 @@ opts.Add(
         validator=validate_parent_dir,
     )
 )
+# vsproj
+opts.Add(
+    BoolVariable(
+        key="vsproj",
+        help="Generate a Visual Studio solution",
+        default=False
+    )
+)
 opts.Update(localEnv)
 
 Help(opts.GenerateHelpText(localEnv))
@@ -49,9 +68,8 @@ compilation_db = env.CompilationDatabase(
 env.Alias("compiledb", compilation_db)
 
 env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
-
 env.Append(CPPPATH=["src/"])
-sources = Glob("src/*.cpp")
+env.libgdextension_sources = Glob("src/*.cpp")
 
 file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
 
@@ -62,8 +80,9 @@ if env["platform"] == "macos":
 libraryfile = "bin/{}/{}".format(env["platform"], file)
 library = env.SharedLibrary(
     libraryfile,
-    source=sources,
+    source=env.libgdextension_sources,
 )
+default_targets += [library]
 
 projectlib = "{}/bin/{}/lib{}".format(projectdir, env["platform"], file)
 
@@ -77,8 +96,32 @@ def copy_bin_to_projectdir(target, source, env):
 
 
 copy = env.Command(projectlib, libraryfile, copy_bin_to_projectdir)
+default_targets += [copy]
 
-default_args = [library, copy]
 if localEnv.get("compiledb", False):
-    default_args += [compilation_db]
-Default(*default_args)
+    default_targets += [compilation_db]
+
+# generate vs project if needed
+if localEnv.get("vsproj", False):
+    if os.name != "nt":
+        print("Error: The `vsproj` option is only usable on Windows with Visual Studio.")
+        Exit(255)
+
+    # enable msvs construct
+    env.Tool("msvs")
+
+    env["CPPPATH"] = [Dir(path) for path in env["CPPPATH"]]
+    env.vs_incs = []
+    env.vs_srcs = []
+
+    add_to_vs_project(env, env.libgodot_sources)
+    add_to_vs_project(env, env.libgdextension_sources)
+
+    vsproj = generate_vs_project_target(env, ARGUMENTS, godot_exec, sln_name)
+    generate_cpp_hint_file("cpp.hint")
+
+    env.Alias("vsproj", vsproj)
+    default_targets += [vsproj]
+
+dump(env)
+Default(*default_targets)
