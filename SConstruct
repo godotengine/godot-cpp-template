@@ -1,11 +1,13 @@
 #!/usr/bin/env python
+import os
 
-from sconsutil import *
+from SCons.Script import *
+from SConsutil import *
 
 # libgdextension name
 libname = "gdextension"
 # godot binary to run demo project
-godot_exec = f'godot\\Godot_v4.1.2-stable_win64.exe'
+run_cmd = "Run.cmd"
 # godot demo project
 projectdir = "demo"
 # sln filename
@@ -71,6 +73,26 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 env.Append(CPPPATH=["src/"])
 env.libgdextension_sources = Glob("src/*.cpp")
 
+# generate vs project if needed
+if localEnv.get("vsproj", False):
+    if os.name != "nt":
+        print("Error: The `vsproj` option is only usable on Windows with Visual Studio.")
+        Exit(255)
+
+    env.Tool("msvs")
+
+    env.vs_incs = []
+    env.vs_srcs = []
+
+    add_to_vs_project(env, Glob("godot-cpp/gen/include/godot_cpp/*"))
+    add_to_vs_project(env, env.libgdextension_sources)
+
+    vsproj = generate_vs_project_target(env, ARGUMENTS, run_cmd, sln_name)
+    generate_cpp_hint_file("cpp.hint")
+
+    env.Alias("vsproj", vsproj)
+    default_targets += [vsproj]
+
 file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
 
 if env["platform"] == "macos":
@@ -101,27 +123,6 @@ default_targets += [copy]
 if localEnv.get("compiledb", False):
     default_targets += [compilation_db]
 
-# generate vs project if needed
-if localEnv.get("vsproj", False):
-    if os.name != "nt":
-        print("Error: The `vsproj` option is only usable on Windows with Visual Studio.")
-        Exit(255)
-
-    # enable msvs construct
-    env.Tool("msvs")
-
-    env["CPPPATH"] = [Dir(path) for path in env["CPPPATH"]]
-    env.vs_incs = []
-    env.vs_srcs = []
-
-    add_to_vs_project(env, env.libgodot_sources)
-    add_to_vs_project(env, env.libgdextension_sources)
-
-    vsproj = generate_vs_project_target(env, ARGUMENTS, godot_exec, sln_name)
-    generate_cpp_hint_file("cpp.hint")
-
-    env.Alias("vsproj", vsproj)
-    default_targets += [vsproj]
-
 dump(env)
+
 Default(*default_targets)
