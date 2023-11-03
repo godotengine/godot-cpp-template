@@ -192,7 +192,7 @@ def generate_vs_project_target(env, original_args, godot_exec, sln_name):
         module_configs = ModuleConfigs()
 
         env["MSVSBUILDCOM"] = module_configs.build_commandline(".\\venv\\Scripts\\scons.exe debug_symbols=yes")
-        env["MSVSREBUILDCOM"] = module_configs.build_commandline(".\\venv\\Scripts\\scons.exe debug_symbols=yes vsproj=yes")
+        env["MSVSREBUILDCOM"] = module_configs.build_commandline(".\\venv\\Scripts\\scons.exe --no-cache debug_symbols=yes vsproj=yes")
         env["MSVSCLEANCOM"] = module_configs.build_commandline(".\\venv\\Scripts\\scons.exe --clean")
         if not env.get("MSVS"):
             env["MSVS"]["PROJECTSUFFIX"] = ".vcxproj"
