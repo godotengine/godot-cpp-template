@@ -73,26 +73,6 @@ env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 env.Append(CPPPATH=["src/"])
 env.libgdextension_sources = Glob("src/*.cpp")
 
-# generate vs project if needed
-if localEnv.get("vsproj", False):
-    if os.name != "nt":
-        print("Error: The `vsproj` option is only usable on Windows with Visual Studio.")
-        Exit(255)
-
-    env.Tool("msvs")
-
-    env.vs_incs = []
-    env.vs_srcs = []
-
-    add_to_vs_project(env, Glob("godot-cpp/gen/include/godot_cpp/*"))
-    add_to_vs_project(env, env.libgdextension_sources)
-
-    vsproj = generate_vs_project_target(env, ARGUMENTS, run_cmd, sln_name)
-    generate_cpp_hint_file("cpp.hint")
-
-    env.Alias("vsproj", vsproj)
-    default_targets += [vsproj]
-
 file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
 
 if env["platform"] == "macos":
@@ -120,9 +100,32 @@ def copy_bin_to_projectdir(target, source, env):
 copy = env.Command(projectlib, libraryfile, copy_bin_to_projectdir)
 default_targets += [copy]
 
+# generate compile_database.json if compiledb=yes provided
 if localEnv.get("compiledb", False):
     default_targets += [compilation_db]
 
-dump(env)
+# generate visual studio project if vsproj=yes provided
+if localEnv.get("vsproj", False):
+    if os.name != "nt":
+        print("Error: The `vsproj` option is only usable on Windows with Visual Studio.")
+        Exit(255)
 
+    env.Tool("msvs")
+
+    env.vs_incs = []
+    env.vs_srcs = []
+
+    add_to_vs_project(env, Glob("godot-cpp/gen/include/godot_cpp/*"))
+    add_to_vs_project(env, env.libgdextension_sources)
+
+    vsproj = generate_vs_project_target(env, ARGUMENTS, run_cmd, sln_name)
+    generate_cpp_hint_file("cpp.hint")
+
+    env.Alias("vsproj", vsproj)
+    default_targets += [vsproj]
+
+# sets default targets
 Default(*default_targets)
+
+# dump environment variables for debugging
+dump(env)
