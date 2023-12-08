@@ -1,0 +1,110 @@
+name: GDExtension Build
+description: Build GDExtension
+
+inputs:
+  platform:
+    required: true
+    description: Target platform.
+  arch:
+    required: true
+    description: Target architecture.
+  godot-cpp-location:
+    default: 'godot-cpp'
+    description: godot-cpp source code location.
+  float-precision:
+    default: 'single'
+    description: Float precision (single or double).
+  build-target-type:
+    default: 'template_debug'
+    description: Build type (template_debug or template_release).
+  scons-cache:
+    default: .scons-cache/
+    description: Scons cache location.
+  em_version:
+    default: 3.1.39
+    description: Emscripten version.
+  em_cache_folder:
+    default: emsdk-cache
+    description: Emscripten cache folder.
+
+runs:
+  using: composite
+  steps:
+# Android only
+    - name: Android - Set up Java 11
+      uses: actions/setup-java@v3
+      if: ${{ inputs.platform == 'android' }}
+      with:
+        distribution: temurin
+        java-version: 11
+
+    - name: Android - dependencies
+      uses: nttld/setup-ndk@v1
+      if: ${{ inputs.platform == 'android' }}
+      with:
+        ndk-version: r23c
+        link-to-sdk: true
+# Linux only
+    - name: Linux - dependencies
+      if: ${{ inputs.platform == 'linux' }}
+      shell: sh
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -qqq build-essential pkg-config
+# Web only
+    - name: Web - Set up Emscripten latest
+      if: ${{ inputs.platform == 'web' }}
+      uses: mymindstorm/setup-emsdk@v13
+      with:
+        version: ${{ inputs.em_version }}
+        actions-cache-folder: ${{ inputs.em_cache_folder }}.${{ inputs.float-precision }}.${{ inputs.build-target-type }}
+    - name: Web - Verify Emscripten setup
+      if: ${{ inputs.platform == 'web' }}
+      shell: sh
+      run: |
+        emcc -v
+# Windows only
+    - name: Windows - Setup MinGW for Windows/MinGW build
+      uses: egor-tensin/setup-mingw@v2
+      if: ${{ inputs.platform == 'windows' }}
+      with:
+        version: 12.2.0
+# Dependencies of godot
+    # Use python 3.x release (works cross platform)
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v4
+      with:
+        # Semantic version range syntax or exact version of a Python version
+        python-version: "3.x"
+        # Optional - x64 or x86 architecture, defaults to x64
+        architecture: "x64"
+    - name: Setup scons
+      shell: bash
+      run: |
+        python -c "import sys; print(sys.version)"
+        python -m pip install scons==4.4.0
+        scons --version
+# Build
+    - name: Cache .scons_cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ${{ github.workspace }}/${{ inputs.gdextension-location }}/${{ inputs.scons-cache }}/
+          ${{ github.workspace }}/${{ inputs.godot-cpp }}/${{ inputs.scons-cache }}/
+        key: ${{ inputs.platform }}_${{ inputs.arch }}_${{ inputs.float-precision }}_${{ inputs.build-target-type }}_cache
+# Build godot-cpp
+    - name: Build godot-cpp Debug Build
+      shell: sh
+      env:
+        SCONS_CACHE: ${{ github.workspace }}/${{ inputs.godot-cpp }}/${{ inputs.scons-cache }}/
+      run: |
+        scons target=${{ inputs.build-target-type }} platform=${{ inputs.platform }} arch=${{ inputs.arch }} generate_bindings=yes precision=${{ inputs.float-precision }}
+      working-directory: ${{ inputs.godot-cpp }}
+# Build gdextension
+    - name: Build GDExtension Debug Build
+      shell: sh
+      env:
+        SCONS_CACHE: ${{ github.workspace }}/${{ inputs.gdextension-location }}/${{ inputs.scons-cache }}/
+      run: |
+        scons target=${{ inputs.build-target-type }} platform=${{ inputs.platform }} arch=${{ inputs.arch }} precision=${{ inputs.float-precision }} production=yes
+      working-directory: ${{ inputs.gdextension-location }}
