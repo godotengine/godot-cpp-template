@@ -8,7 +8,95 @@ This repository serves as a quickstart template for GDExtension development with
 * GitHub CI/CD to publish your library packages when creating a release (`.github/workflows/builds.yml`)
 * preconfigured source files for C++ development of the GDExtension (`src/`)
 
-## Usage
+## Usage - Actions
+
+The actions builds `godot-cpp` at a specified location, and then builds the `gdextension` at a configurable location. It builds for desktop, mobile and web and allows for configuration on what platforms you need. It also supports configuration for debug and release builds, and for double builds.
+
+The action uses SConstruct for both godot-cpp and gdextension that is built.
+
+To reuse the build actions, in a github actions yml file, do the following:
+
+```name: Build GDExtension
+on:
+  workflow_call:
+  push:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            arch: x86_64
+            os: ubuntu-20.04
+          - platform: windows
+            arch: x86_32
+            os: windows-latest
+          - platform: windows
+            arch: x86_64
+            os: windows-latest
+          - platform: macos
+            arch: universal
+            os: macos-latest
+          - platform: android
+            arch: arm64
+            os: ubuntu-20.04
+          - platform: android
+            arch: arm32
+            os: ubuntu-20.04
+          - platform: android
+            arch: x86_64
+            os: ubuntu-20.04
+          - platform: android
+            arch: x86_32
+            os: ubuntu-20.04
+          - platform: ios
+            arch: arm64
+            os: macos-latest
+          - platform: web
+            arch: wasm32
+            os: ubuntu-20.04
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+      - name: 🔗 GDExtension Build
+        uses: ughuuu/godot-cpp-template/.github/actions/build@main
+        with:
+          platform: ${{ matrix.platform }}
+          arch: ${{ matrix.arch }}
+          godot-cpp-location: godot-cpp
+          enable-double-precision-builds: true
+          enable-debug-builds: true
+          enable-clang-lint: false
+          lint-path: src
+          bin-path: bin
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: GDExtension
+          path: |
+            ${{ github.workspace }}/bin/**
+
+```
+
+Eg. jf you only want to build for desktop platforms, use:
+
+```
+jobs:
+  gdextension-build:
+    uses: godotengine/godot-cpp-template/.github/workflows/build-gdextension.yml
+    with:
+      platforms: [linux, windows, mac]
+```
+
+## Usage - Template
+
 To use this template, log in to github and click the green "Use this template" button at the top of the repository page.
 This will let you create a copy of this repository with a clean git history. Make sure you clone the correct branch as these are configured for development of their respective Godot development branches and differ from each other. Refer to the docs to see what changed between the versions.
 
