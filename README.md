@@ -95,6 +95,63 @@ jobs:
       platforms: [linux, windows, mac]
 ```
 
+## Usage - Signing
+
+You will need:
+
+- A macbook
+- An apple id enrolled in apple developer(99 dollar per year)
+
+For the actions you will need to set the following inputs. Store them as secrets in github:
+
+- APPLE_CERT_BASE64
+- APPLE_CERT_PASSWORD
+- APPLE_DEV_ID
+- APPLE_DEV_TEAM_ID
+- APPLE_DEV_PASSWORD
+- APPLE_DEV_APP_ID
+
+You will find here a guide on how to create all of them. Go to developer.apple.com:
+
+- Create an Apple ID if you don’t have one already.
+- Use your Apple ID to register as an Apple Developer.
+- Accept all agreements from Apple Developer Page.
+
+### APPLE_DEV_TEAM_ID - Apple Team Id
+
+- Go to [developer.apple.com](https://developer.apple.com). Go to account.
+- Go to membership details. Copy Team Id.
+
+Eg. `1ABCD23EFG`
+
+### APPLE_DEV_APP_ID - Apple Developer Id
+
+- Go to [developer.apple.com](https://developer.apple.com). Go to account.
+- Go to user and access. Copy Developer Id.
+
+Eg. `12a34b56-ab1c-123a-a123-12a34b56`
+
+### APPLE_DEV_PASSWORD
+
+- Create [Apple ID App-Specific Password](https://support.apple.com/en-us/102654). Copy the password.
+
+Eg. `abcd-abcd-abcd-abcd`
+
+
+### APPLE_CERT_PASSWORD
+
+### APPLE_CERT_BASE64
+
+- Go to [developer.apple.com](https://developer.apple.com). Go to account.
+- Go to certificates.
+- Create Developer ID Application. Click Continue.
+- Leave profile type as is. [Create a certificate signing request from a mac](https://developer.apple.com/help/account/create-certificates/create-a-certificate-signing-request). You can use your own name and email address. Save the file to disk. You will get a file called `CertificateSigningRequest.certSigningRequest`. Upload it to the Developer ID Application request. Click Continue.
+- Download the certificate. You will get a file `developerID_application.cer`.
+- On a macbook, double click the file. Add it to a keychain. When it opens it will say Apple Developer Id. Copy it.
+
+Eg.
+`Name Surname (1ABCD23EFG)`
+
 ## Usage - Template
 
 To use this template, log in to github and click the green "Use this template" button at the top of the repository page.
