@@ -82,36 +82,35 @@ runs:
         security set-key-partition-list -S "apple-tool:,apple:" -s -k $KeychainPassword $Keychain
 
         $Framework = "${{ inputs.FRAMEWORK_PATH }}"
-          $Archive = [IO.Path]::ChangeExtension((New-TemporaryFile), "zip")
+        $Archive = [IO.Path]::ChangeExtension((New-TemporaryFile), "zip")
 
-          Write-Output "Signing '$Framework'..."
+        Write-Output "Signing '$Framework'..."
 
-          & $CodesignPath --force --verify --timestamp --verbose --sign $DeveloperIdApplication "$Framework"
+        & $CodesignPath --force --verify --timestamp --verbose --sign $DeveloperIdApplication "$Framework"
 
-          Write-Output "Verifying signing..."
+        Write-Output "Verifying signing..."
 
-          & $CodesignPath --verify --verbose "$Framework"
+        & $CodesignPath --verify --verbose "$Framework"
 
-          Write-Output "Archiving framework to '$Archive'..."
+        Write-Output "Archiving framework to '$Archive'..."
 
-          ditto -ck --sequesterRsrc --keepParent "$Framework" "$Archive"
+        ditto -ck --sequesterRsrc --keepParent "$Framework" "$Archive"
 
-          Write-Output "Submitting archive for notarization..."
+        Write-Output "Submitting archive for notarization..."
 
-          $output = xcrun notarytool submit "$Archive" `
-            --apple-id $DevId `
-            --team-id $DevTeamId `
-            --password $DevPassword `
-            --wait
-          echo $output
-          $matches = $output -match '((\d|[a-z])+-(\d|[a-z])+-(\d|[a-z])+-(\d|[a-z])+-(\d|[a-z])+)'
-          if ($output) {
-            $id_res = $matches[0].Substring(6)
-          }
-          xcrun notarytool log $id_res `
-            --apple-id $DevId `
-            --team-id $DevTeamId `
-            --password $DevPassword `
-            developer_log.json
-          get-content developer_log.json
+        $output = xcrun notarytool submit "$Archive" `
+          --apple-id $DevId `
+          --team-id $DevTeamId `
+          --password $DevPassword `
+          --wait
+        echo $output
+        $matches = $output -match '((\d|[a-z])+-(\d|[a-z])+-(\d|[a-z])+-(\d|[a-z])+-(\d|[a-z])+)'
+        if ($output) {
+          $id_res = $matches[0].Substring(6)
         }
+        xcrun notarytool log $id_res `
+          --apple-id $DevId `
+          --team-id $DevTeamId `
+          --password $DevPassword `
+          developer_log.json
+        get-content developer_log.json
