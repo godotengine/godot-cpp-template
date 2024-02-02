@@ -23,9 +23,6 @@ inputs:
   bin-path:
     default: bin
     description: The path of the artifact.
-  lint-path:
-    default: src/**
-    description: The path of the source code for clang-format
   scons-cache:
     default: .scons-cache/
     description: Scons cache location.
@@ -93,15 +90,6 @@ runs:
         python -c "import sys; print(sys.version)"
         python -m pip install scons==4.4.0
         scons --version
-    - name: Setup clang-format
-      shell: bash
-      run: |
-        python -m pip install clang-format
-    - name: Run clang-format
-      shell: bash
-      run: |
-        clang-format ${{ inputs.lint-path }} --dry-run --Werror
-      if: ${{ inputs.enable-clang-lint == 'true' }}
 # Build
     - name: Cache .scons_cache
       uses: actions/cache@v3

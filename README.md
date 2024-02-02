@@ -101,6 +101,7 @@ You will need:
 
 - A macbook
 - An apple id enrolled in apple developer(99 dollar per year)
+- In the framework folder, you need to create a `Resources/Info.plist`
 
 For the actions you will need to set the following inputs. Store them as secrets in github:
 
@@ -117,40 +118,47 @@ You will find here a guide on how to create all of them. Go to developer.apple.c
 - Use your Apple ID to register as an Apple Developer.
 - Accept all agreements from Apple Developer Page.
 
+### APPLE_DEV_APP_ID - Apple Id
+
+- Your email used for your apple id.
+
+- APPLE_DEV_APP_ID = email@provider.com
+
 ### APPLE_DEV_TEAM_ID - Apple Team Id
 
 - Go to [developer.apple.com](https://developer.apple.com). Go to account.
 - Go to membership details. Copy Team Id.
 
-Eg. `1ABCD23EFG`
+- APPLE_DEV_TEAM_ID = `1ABCD23EFG`
 
-### APPLE_DEV_APP_ID - Apple Developer Id
+### APPLE_DEV_PASSWORD - Apple App-Specific Password
 
-- Go to [developer.apple.com](https://developer.apple.com). Go to account.
-- Go to user and access. Copy Developer Id.
+- Create [Apple App-Specific Password](https://support.apple.com/en-us/102654). Copy the password.
 
-Eg. `12a34b56-ab1c-123a-a123-12a34b56`
+- APPLE_DEV_PASSWORD = `abcd-abcd-abcd-abcd`
 
-### APPLE_DEV_PASSWORD
-
-- Create [Apple ID App-Specific Password](https://support.apple.com/en-us/102654). Copy the password.
-
-Eg. `abcd-abcd-abcd-abcd`
-
-
-### APPLE_CERT_PASSWORD
-
-### APPLE_CERT_BASE64
+### APPLE_CERT_BASE64 and APPLE_CERT_PASSWORD and APPLE_DEV_APP_ID
 
 - Go to [developer.apple.com](https://developer.apple.com). Go to account.
 - Go to certificates.
 - Create Developer ID Application. Click Continue.
 - Leave profile type as is. [Create a certificate signing request from a mac](https://developer.apple.com/help/account/create-certificates/create-a-certificate-signing-request). You can use your own name and email address. Save the file to disk. You will get a file called `CertificateSigningRequest.certSigningRequest`. Upload it to the Developer ID Application request. Click Continue.
 - Download the certificate. You will get a file `developerID_application.cer`.
-- On a macbook, double click the file. Add it to a keychain. When it opens it will say Apple Developer Id. Copy it.
+- On a macbook, double click the file. When it opens it will say Apple Developer Id. Copy it.
 
 Eg.
-`Name Surname (1ABCD23EFG)`
+- APPLE_DEV_APP_ID = `Name Surname (1ABCD23EFG)`
+
+- Add it to a keychain. In the Keychain Access app that opened, go to keys, sort by date modified, expand your key, right click, export. When exporting, set a password for the certificate. This will be APPLE_CERT_PASSWORD. You will get a `Certificates.p12` file.
+- Then you need to make a base64 file out of it, by running:
+```
+base64 -i Certificates.p12 -o Certificates.base64
+```
+
+- Copy the contents of the generated file:
+Eg.
+- APPLE_CERT_BASE64 = `...`(A long text file)
+- APPLE_CERT_PASSWORD = `<password_set_when_exporting_p12>`
 
 ## Usage - Template
 

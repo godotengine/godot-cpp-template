@@ -2,12 +2,28 @@ name: GDExtension Sign
 description: Sign Mac GDExtension
 
 inputs:
-  bin-path:
-    default: bin
-    description: The path of the artifact.
-  APPLE_CERT_BASE64:
-    description: 
+  FRAMEWORK_PATH:
+    description: The path of the artifact. Eg. bin/addons/my_addon/bin/libmy_addon.macos.template_release.universal.framework
+    required: true
 
+  APPLE_CERT_BASE64:
+    required: true
+    description: Base64 file from p12 certificate.
+  APPLE_CERT_PASSWORD:
+    required: true
+    description: Password set when creating p12 certificate from .cer certificate.
+  APPLE_DEV_PASSWORD:
+    required: true
+    description: Apple App-Specific Password. Eg. abcd-abcd-abcd-abcd
+  APPLE_DEV_ID:
+    required: true
+    description: Email used for Apple Id. Eg. email@provider.com
+  APPLE_DEV_TEAM_ID:
+    required: true
+    description: Apple Team Id. Eg. 1ABCD23EFG
+  APPLE_DEV_APP_ID:
+    required: true
+    description: Apple Certificate Developer Name and Team. Eg. Name Surname (1ABCD23EFG)
 runs:
   using: composite
   steps:
@@ -19,17 +35,17 @@ runs:
 
         $CodesignPath = Get-Command codesign | Resolve-Path
 
-        $CertificateBase64 = $env:APPLE_CERT_BASE64
-        $CertificatePassword = $env:APPLE_CERT_PASSWORD
+        $CertificateBase64 = "${{inputs.APPLE_CERT_BASE64}}"
+        $CertificatePassword = "${{inputs.APPLE_CERT_PASSWORD}}"
         $CertificatePath = [IO.Path]::ChangeExtension((New-TemporaryFile), "p12")
 
         $Keychain = "ephemeral.keychain"
         $KeychainPassword = (New-Guid).ToString().Replace("-", "")
 
-        $DevId = $env:APPLE_DEV_ID
-        $DevTeamId = $env:APPLE_DEV_TEAM_ID
-        $DevPassword = $env:APPLE_DEV_PASSWORD
-        $DeveloperIdApplication = $env:APPLE_DEV_APP_ID
+        $DevId = "${{ inputs.APPLE_DEV_ID }}"
+        $DevTeamId = "${{ inputs.APPLE_DEV_TEAM_ID }}"
+        $DevPassword = "${{ inputs.APPLE_DEV_PASSWORD }}"
+        $DeveloperIdApplication = "${{ inputs.APPLE_DEV_APP_ID }}"
 
         if (!$CertificateBase64) { throw "No certificate provided" }
         if (!$CertificatePassword) { throw "No certificate password provided" }
@@ -65,7 +81,7 @@ runs:
 
         security set-key-partition-list -S "apple-tool:,apple:" -s -k $KeychainPassword $Keychain
 
-        foreach ($Framework in $Frameworks) {
+        $Framework = "${{ inputs.FRAMEWORK_PATH }}"
           $Archive = [IO.Path]::ChangeExtension((New-TemporaryFile), "zip")
 
           Write-Output "Signing '$Framework'..."
