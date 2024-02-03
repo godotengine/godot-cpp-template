@@ -5,7 +5,6 @@ inputs:
   FRAMEWORK_PATH:
     description: The path of the artifact. Eg. bin/addons/my_addon/bin/libmy_addon.macos.template_release.universal.framework
     required: true
-
   APPLE_CERT_BASE64:
     required: true
     description: Base64 file from p12 certificate.

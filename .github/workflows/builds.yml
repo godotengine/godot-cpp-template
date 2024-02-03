@@ -70,7 +70,7 @@ jobs:
           bin-path: bin
 # Sign
       - name: Mac Sign
-        if: ${{ matrix.platform == 'macos' }}
+        if: ${{ matrix.platform == 'macos' && secrets.APPLE_CERT_BASE64 != '' }}
         uses: ./.github/actions/sign
         with:
           bin-path: bin
