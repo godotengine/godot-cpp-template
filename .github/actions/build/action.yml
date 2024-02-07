@@ -11,18 +11,12 @@ inputs:
   godot-cpp-location:
     default: 'godot-cpp'
     description: Godot cpp source code location
-  enable-double-precision-builds:
-    default: 'false'
-    description: Should we also do double precision builds
-  enable-debug-builds:
-    default: 'true'
-    description: Should we also do debug builds
-  enable-clang-lint:
-    default: 'true'
-    description: Should we run clang-format
-  bin-path:
-    default: bin
-    description: The path of the artifact.
+  float-precision:
+    default: 'single'
+    description: Float precision. single or double
+  build-target-type:
+    default: 'template_debug'
+    description: Build type. template_debug or template_release
   scons-cache:
     default: .scons-cache/
     description: Scons cache location.
@@ -104,25 +98,7 @@ runs:
       env:
         SCONS_CACHE: ${{ github.workspace }}/${{ inputs.godot-cpp }}/${{ inputs.scons-cache }}/
       run: |
-        scons target=template_debug platform=${{ inputs.platform }} arch=${{ inputs.arch }} generate_bindings=yes
-      if: ${{ inputs.enable-debug-builds }}
-      working-directory: ${{ inputs.godot-cpp }}
-    - name: Build Godot Cpp Debug Build Double Precision
-      shell: sh
-      run: |
-        scons target=template_debug platform=${{ inputs.platform }} arch=${{ inputs.arch }} generate_bindings=yes precision=double
-      if: ${{ inputs.enable-debug-builds && inputs.enable-double-precision-builds }}
-      working-directory: ${{ inputs.godot-cpp }}
-    - name: Build Godot Cpp Release Build
-      shell: sh
-      run: |
-        scons target=template_release platform=${{ inputs.platform }} arch=${{ inputs.arch }} generate_bindings=yes
-      working-directory: ${{ inputs.godot-cpp }}
-    - name: Build Godot Cpp Release Build Double Precision
-      shell: sh
-      run: |
-        scons target=template_release platform=${{ inputs.platform }} arch=${{ inputs.arch }} generate_bindings=yes precision=double
-      if: ${{ inputs.enable-double-precision-builds }}
+        scons target=${{ inputs.build-target-type }} platform=${{ inputs.platform }} arch=${{ inputs.arch }} generate_bindings=yes precision=${{ inputs.float-precision }}
       working-directory: ${{ inputs.godot-cpp }}
 # Build gdextension
     - name: Build GDExtension Debug Build
@@ -130,29 +106,5 @@ runs:
       env:
         SCONS_CACHE: ${{ github.workspace }}/${{ inputs.gdextension-location }}/${{ inputs.scons-cache }}/
       run: |
-        scons target=template_debug platform=${{ inputs.platform }} arch=${{ inputs.arch }}
-      if: ${{ inputs.enable-debug-builds }}
+        scons target=${{ inputs.build-target-type }} platform=${{ inputs.platform }} arch=${{ inputs.arch }} precision=${{ inputs.float-precision }}
       working-directory: ${{ inputs.gdextension-location }}
-    - name: Build GDExtension Debug Build Double Precision
-      shell: sh
-      run: |
-        scons target=template_debug platform=${{ inputs.platform }} arch=${{ inputs.arch }} precision=double
-      if: ${{ inputs.enable-debug-builds && inputs.enable-double-precision-builds }}
-      working-directory: ${{ inputs.gdextension-location }}
-    - name: Build GDExtension Release Build
-      shell: sh
-      run: |
-        scons target=template_release platform=${{ inputs.platform }} arch=${{ inputs.arch }}
-      working-directory: ${{ inputs.gdextension-location }}
-    - name: Build GDExtension Release Build Double Precision
-      shell: sh
-      run: |
-        scons target=template_release platform=${{ inputs.platform }} arch=${{ inputs.arch }} precision=double
-      if: ${{ inputs.enable-double-precision-builds }}
-      working-directory: ${{ inputs.gdextension-location }}
-# Windows only
-    - name: Windows - Delete compilation files
-      if: ${{ matrix.platform == 'windows' }}
-      shell: pwsh
-      run: |
-        Remove-Item ${{ inputs.bin-path }}/* -Include *.exp,*.lib,*.pdb -Force

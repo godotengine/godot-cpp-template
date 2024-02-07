@@ -10,36 +10,86 @@ jobs:
       matrix:
         include:
           - platform: linux
+            float-precision: single
             arch: x86_64
             os: ubuntu-20.04
           - platform: windows
+            float-precision: single
             arch: x86_32
             os: windows-latest
           - platform: windows
+            float-precision: single
             arch: x86_64
             os: windows-latest
           - platform: macos
+            float-precision: single
             arch: universal
             os: macos-latest
           - platform: android
+            float-precision: single
             arch: arm64
             os: ubuntu-20.04
           - platform: android
+            float-precision: single
             arch: arm32
             os: ubuntu-20.04
           - platform: android
+            float-precision: single
             arch: x86_64
             os: ubuntu-20.04
           - platform: android
+            float-precision: single
             arch: x86_32
             os: ubuntu-20.04
           - platform: ios
+            float-precision: single
             arch: arm64
             os: macos-latest
           - platform: web
+            float-precision: single
             arch: wasm32
             os: ubuntu-20.04
 
+          - platform: linux
+            float-precision: double
+            arch: x86_64
+            os: ubuntu-20.04
+          - platform: windows
+            float-precision: double
+            arch: x86_32
+            os: windows-latest
+          - platform: windows
+            float-precision: double
+            arch: x86_64
+            os: windows-latest
+          - platform: macos
+            float-precision: double
+            arch: universal
+            os: macos-latest
+          - platform: android
+            float-precision: double
+            arch: arm64
+            os: ubuntu-20.04
+          - platform: android
+            float-precision: double
+            arch: arm32
+            os: ubuntu-20.04
+          - platform: android
+            float-precision: double
+            arch: x86_64
+            os: ubuntu-20.04
+          - platform: android
+            float-precision: double
+            arch: x86_32
+            os: ubuntu-20.04
+          - platform: ios
+            float-precision: double
+            arch: arm64
+            os: macos-latest
+          - platform: web
+            float-precision: double
+            arch: wasm32
+            os: ubuntu-20.04
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -63,17 +113,13 @@ jobs:
           platform: ${{ matrix.platform }}
           arch: ${{ matrix.arch }}
           godot-cpp-location: godot-cpp
-          enable-double-precision-builds: true
-          enable-debug-builds: true
-          enable-clang-lint: false
-          lint-path: src
-          bin-path: bin
+          float-precision: ${{ matrix.float-precision }}
+          build-target-type: template_release
 # Sign
       - name: Mac Sign
-        if: ${{ matrix.platform == 'macos' && secrets.APPLE_CERT_BASE64 != '' }}
+        if: ${{ matrix.platform == 'macos' }}
         uses: ./.github/actions/sign
         with:
-          bin-path: bin
           APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
           APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
           APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}
@@ -81,6 +127,11 @@ jobs:
           APPLE_DEV_TEAM_ID: ${{ secrets.APPLE_DEV_TEAM_ID }}
           APPLE_DEV_APP_ID: ${{ secrets.APPLE_DEV_APP_ID }}
 
+      - name: Windows - Delete compilation files
+        if: ${{ matrix.platform == 'windows' }}
+        shell: pwsh
+        run: |
+          Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
