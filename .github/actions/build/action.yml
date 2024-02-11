@@ -91,7 +91,7 @@ runs:
         path: |
           ${{ github.workspace }}/${{ inputs.gdextension-location }}/${{ inputs.scons-cache }}/
           ${{ github.workspace }}/${{ inputs.godot-cpp }}/${{ inputs.scons-cache }}/
-        key: ${{ inputs.platform }}_${{ inputs.arch }}_cache
+        key: ${{ inputs.platform }}_${{ inputs.arch }}_${{ inputs.float-precision }}_${{ inputs.build-target-type }}_cache
 # Build godot-cpp
     - name: Build Godot Cpp Debug Build
       shell: sh
