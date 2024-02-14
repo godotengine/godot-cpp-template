@@ -3,6 +3,9 @@ on:
   workflow_call:
   push:
 
+env:
+  LIBNAME: example
+
 jobs:
   build:
     strategy:
@@ -120,6 +123,7 @@ jobs:
         if: ${{ matrix.platform == 'macos' }}
         uses: ./.github/actions/sign
         with:
+          FRAMEWORK_PATH: bin/macos/macos.framework/libEXTENSION-NAME.macos.template_release
           APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
           APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
           APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}
@@ -135,6 +139,6 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: GDExtension
+          name: godot-cpp-template
           path: |
             ${{ github.workspace }}/bin/**
