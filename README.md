@@ -88,7 +88,7 @@ You will need:
 
 - A macbook
 - An apple id enrolled in apple developer(99 dollar per year)
-- In the framework folder, you need to create a `Resources/Info.plist`
+- In the framework folder, you need to create a `Resources/Info.plist`. Take as example the one in this project. Be careful to set CFBundleExecutable to the EXACT lib name, otherwise it won't work. Also, don't put strange names in the CFBundleName and other such places, try to only use letters and space. Errors will be if not extremly vague to impossible to debug.
 
 For the actions you will need to set the following inputs. Store them as secrets in github:
 
@@ -131,12 +131,12 @@ You will find here a guide on how to create all of them. Go to developer.apple.c
 - Click on + at Certificates tab. Create Developer ID Application. Click Continue.
 - Leave profile type as is. [Create a certificate signing request from a mac](https://developer.apple.com/help/account/create-certificates/create-a-certificate-signing-request). You can use your own name and email address. Save the file to disk. You will get a file called `CertificateSigningRequest.certSigningRequest`. Upload it to the Developer ID Application request. Click Continue.
 - Download the certificate. You will get a file `developerID_application.cer`.
-- On a macbook, right click and select open. When it opens, select view Certificate. It will say Developer ID Application. Copy it.
+- On a macbook, right click and select open. Add it to the login keychain. In the Keychain Access app that opened, login Keychain tab, go to Keys, sort by date modified, expand your key (the key should have name you entered at common name `Common Name`), right click the expanded certificate, get info, and copy the text at Details -> Subject Name -> Common Name.
 
 Eg.
-- APPLE_DEV_APP_ID = `Name Surname (1ABCD23EFG)`
+- APPLE_DEV_APP_ID = `Developer ID Application: Common Name (1ABCD23EFG)`
 
-- Add it to a keychain. (If it gives error, add to another keychain in the dropdown, eg. login). In the Keychain Access app that opened, go to Keys, sort by date modified, expand your key (the key should have name `Name Surname`), right click the expanded certificate, export as p12. When exporting, set a password for the certificate. This will be APPLE_CERT_PASSWORD. You will get a `Certificates.p12` file.
+- Then, right click on the certificate and click export. At file format select p12. When exporting, set a password for the certificate. This will be APPLE_CERT_PASSWORD. You will get a `Certificates.p12` file.
 
 Eg.
 - APPLE_CERT_PASSWORD = `<password_set_when_exporting_p12>`
@@ -149,6 +149,8 @@ base64 -i Certificates.p12 -o Certificates.base64
 - Copy the contents of the generated file:
 Eg.
 - APPLE_CERT_BASE64 = `...`(A long text file)
+
+- While still
 
 ## Usage - Template
 

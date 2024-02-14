@@ -22,7 +22,8 @@ inputs:
     description: Apple Team Id. Eg. 1ABCD23EFG
   APPLE_DEV_APP_ID:
     required: true
-    description: Apple Certificate Developer Name and Team. Eg. Name Surname (1ABCD23EFG)
+    description: |
+      Certificate name from get info -> Common name . Eg. Developer ID Application: Common Name (1ABCD23EFG)
 runs:
   using: composite
   steps:
