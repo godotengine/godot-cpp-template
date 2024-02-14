@@ -123,7 +123,7 @@ jobs:
         if: ${{ matrix.platform == 'macos' }}
         uses: ./.github/actions/sign
         with:
-          FRAMEWORK_PATH: bin/macos/macos.framework/libEXTENSION-NAME.macos.template_release
+          FRAMEWORK_PATH: bin/macos/macos.framework
           APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
           APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
           APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}
