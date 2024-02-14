@@ -73,11 +73,13 @@ runs:
       security default-keychain -s $Keychain
 
       Write-Output "Importing certificate into keychain..."
-
       security import $CertificatePath `
         -k ~/Library/Keychains/$Keychain `
         -P $CertificatePassword `
         -T $CodesignPath
+      Write-Output "Check identities..."
+
+      security find-identity
 
       Write-Output "Granting access to keychain..."
 
