@@ -82,16 +82,6 @@ jobs:
 
 ```
 
-Eg. jf you only want to build for desktop platforms, use:
-
-```
-jobs:
-  gdextension-build:
-    uses: godotengine/godot-cpp-template/.github/workflows/build-gdextension.yml
-    with:
-      platforms: [linux, windows, mac]
-```
-
 ## Usage - Signing
 
 You will need:
@@ -115,11 +105,11 @@ You will find here a guide on how to create all of them. Go to developer.apple.c
 - Use your Apple ID to register as an Apple Developer.
 - Accept all agreements from Apple Developer Page.
 
-### APPLE_DEV_APP_ID - Apple Id
+### APPLE_DEV_ID - Apple Id
 
 - Your email used for your apple id.
 
-- APPLE_DEV_APP_ID = email@provider.com
+- APPLE_DEV_ID = email@provider.com
 
 ### APPLE_DEV_TEAM_ID - Apple Team Id
 
@@ -138,15 +128,19 @@ You will find here a guide on how to create all of them. Go to developer.apple.c
 
 - Go to [developer.apple.com](https://developer.apple.com). Go to account.
 - Go to certificates.
-- Create Developer ID Application. Click Continue.
+- Click on + at Certificates tab. Create Developer ID Application. Click Continue.
 - Leave profile type as is. [Create a certificate signing request from a mac](https://developer.apple.com/help/account/create-certificates/create-a-certificate-signing-request). You can use your own name and email address. Save the file to disk. You will get a file called `CertificateSigningRequest.certSigningRequest`. Upload it to the Developer ID Application request. Click Continue.
 - Download the certificate. You will get a file `developerID_application.cer`.
-- On a macbook, double click the file. When it opens it will say Apple Developer Id. Copy it.
+- On a macbook, right click and select open. When it opens, select view Certificate. It will say Developer ID Application. Copy it.
 
 Eg.
 - APPLE_DEV_APP_ID = `Name Surname (1ABCD23EFG)`
 
-- Add it to a keychain. In the Keychain Access app that opened, go to keys, sort by date modified, expand your key, right click, export. When exporting, set a password for the certificate. This will be APPLE_CERT_PASSWORD. You will get a `Certificates.p12` file.
+- Add it to a keychain. (If it gives error, add to another keychain in the dropdown, eg. login). In the Keychain Access app that opened, go to Keys, sort by date modified, expand your key (the key should have name `Name Surname`), right click the expanded certificate, export as p12. When exporting, set a password for the certificate. This will be APPLE_CERT_PASSWORD. You will get a `Certificates.p12` file.
+
+Eg.
+- APPLE_CERT_PASSWORD = `<password_set_when_exporting_p12>`
+
 - Then you need to make a base64 file out of it, by running:
 ```
 base64 -i Certificates.p12 -o Certificates.base64
@@ -155,7 +149,6 @@ base64 -i Certificates.p12 -o Certificates.base64
 - Copy the contents of the generated file:
 Eg.
 - APPLE_CERT_BASE64 = `...`(A long text file)
-- APPLE_CERT_PASSWORD = `<password_set_when_exporting_p12>`
 
 ## Usage - Template
 
