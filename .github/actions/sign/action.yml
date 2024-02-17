@@ -123,6 +123,14 @@ runs:
 
       & $CodesignPath --verify --verbose "$Framework"
 
+      Write-Output "Stapling the notarization ticket..."
+
+      xcrun stapler staple -v "$Framework"
+
+      Write-Output "Verifying notarization process..."
+
+      spctl --assess --verbose=4 "$Framework"
+
       Write-Output "Archiving framework to '$Archive'..."
 
       ditto -ck --sequesterRsrc --keepParent "$Framework" "$Archive"
