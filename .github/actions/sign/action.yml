@@ -130,7 +130,7 @@ runs:
   - name: Staple
     shell: sh
     run: |
-      sudo xcrun stapler staple -v "$Framework"
+      sudo xcrun stapler staple -v "${{ inputs.FRAMEWORK_PATH }}"
 
   - name: Notarize
     shell: pwsh
