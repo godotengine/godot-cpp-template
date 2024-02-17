@@ -136,7 +136,7 @@ You will find here a guide on how to create all of them. Go to developer.apple.c
 Eg.
 - APPLE_DEV_APP_ID = `Developer ID Application: Common Name (1ABCD23EFG)`
 
-- Then, right click on the certificate and click export. At file format select p12. When exporting, set a password for the certificate. This will be APPLE_CERT_PASSWORD. You will get a `Certificates.p12` file.
+- Then, select the private key and the certificate, right click and click export. At file format select p12. When exporting, set a password for the certificate. This will be APPLE_CERT_PASSWORD. You will get a `Certificates.p12` file.
 
 Eg.
 - APPLE_CERT_PASSWORD = `<password_set_when_exporting_p12>`
