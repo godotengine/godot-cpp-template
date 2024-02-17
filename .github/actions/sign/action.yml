@@ -112,7 +112,7 @@ runs:
       security set-key-partition-list -S "apple-tool:,apple:" -s -k $KeychainPassword $Keychain
 
       $Framework = "${{ inputs.FRAMEWORK_PATH }}"
-      $SignFlags = "${{ inputs.SIGN_FLAGS }}"
+      $SignFlags = "${{ inptuts.SIGN_FLAGS }}"
       $Archive = [IO.Path]::ChangeExtension((New-TemporaryFile), "zip")
 
       Write-Output "Signing '$Framework'..."
@@ -121,23 +121,9 @@ runs:
 
       Write-Output "Verifying signing..."
 
-      & $CodesignPath --verify --verbose "$Framework"
+      & $CodesignPath --verify -vvv "$Framework"
 
-      Get-ChildItem -Force -Recurse -Path "$Framework"
-
-      Write-Output "Stapling the notarization ticket..."
-
-  - name: Staple
-    shell: sh
-    run: |
-      sudo xcrun stapler staple -v "${{ inputs.FRAMEWORK_PATH }}"
-
-  - name: Notarize
-    shell: pwsh
-    run: |
-      Write-Output "Verifying notarization process..."
-
-      spctl --assess --verbose=4 "$Framework"
+      Get-ChildItem -Force -Recursive -Path "$Framework"
 
       Write-Output "Archiving framework to '$Archive'..."
 
@@ -161,3 +147,4 @@ runs:
         --password $DevPassword `
         developer_log.json
       get-content developer_log.json
+
