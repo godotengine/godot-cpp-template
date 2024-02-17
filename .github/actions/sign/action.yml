@@ -127,8 +127,14 @@ runs:
 
       Write-Output "Stapling the notarization ticket..."
 
+  - name: Staple
+    shell: sh
+    run: |
       sudo xcrun stapler staple -v "$Framework"
 
+  - name: Notarize
+    shell: pwsh
+    run: |
       Write-Output "Verifying notarization process..."
 
       spctl --assess --verbose=4 "$Framework"
