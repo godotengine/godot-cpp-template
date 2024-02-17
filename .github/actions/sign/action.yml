@@ -123,11 +123,11 @@ runs:
 
       & $CodesignPath --verify --verbose "$Framework"
 
-      sudo Get-ChildItem -Force -Recurse -Path "$Framework"
+      Get-ChildItem -Force -Recurse -Path "$Framework"
 
       Write-Output "Stapling the notarization ticket..."
 
-      xcrun stapler staple -v "$Framework"
+      sudo xcrun stapler staple -v "$Framework"
 
       Write-Output "Verifying notarization process..."
 
