@@ -112,7 +112,7 @@ runs:
       security set-key-partition-list -S "apple-tool:,apple:" -s -k $KeychainPassword $Keychain
 
       $Framework = "${{ inputs.FRAMEWORK_PATH }}"
-      $SignFlags = "${{ inptuts.SIGN_FLAGS }}"
+      $SignFlags = "${{ inputs.SIGN_FLAGS }}"
       $Archive = [IO.Path]::ChangeExtension((New-TemporaryFile), "zip")
 
       Write-Output "Signing '$Framework'..."
