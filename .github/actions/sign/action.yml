@@ -123,6 +123,8 @@ runs:
 
       & $CodesignPath --verify --verbose "$Framework"
 
+      Get-ChildItem -Force
+
       Write-Output "Stapling the notarization ticket..."
 
       xcrun stapler staple -v "$Framework"
