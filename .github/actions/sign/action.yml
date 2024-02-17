@@ -123,7 +123,7 @@ runs:
 
       & $CodesignPath --verify -vvv "$Framework"
 
-      Get-ChildItem -Force -Recursive -Path "$Framework"
+      Get-ChildItem -Force -Recurse -Path "$Framework"
 
       Write-Output "Archiving framework to '$Archive'..."
 
