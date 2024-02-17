@@ -27,6 +27,9 @@ inputs:
   FRAMEWORK_PATH:
     description: The path of the artifact. Eg. bin/addons/my_addon/bin/libmy_addon.macos.template_release.universal.framework
     required: true
+  SIGN_FLAGS:
+    description: The extra flags to use. Eg. --deep
+    required: false
   APPLE_CERT_BASE64:
     required: true
     description: Base64 file from p12 certificate.
@@ -109,11 +112,12 @@ runs:
       security set-key-partition-list -S "apple-tool:,apple:" -s -k $KeychainPassword $Keychain
 
       $Framework = "${{ inputs.FRAMEWORK_PATH }}"
+      $SignFlags = "${{ inptuts.SIGN_FLAGS }}"
       $Archive = [IO.Path]::ChangeExtension((New-TemporaryFile), "zip")
 
       Write-Output "Signing '$Framework'..."
 
-      & $CodesignPath --force --verify --timestamp --verbose --deep --sign $DeveloperIdApplication "$Framework"
+      & $CodesignPath --force --verify --timestamp --verbose "$SignFlags" --sign $DeveloperIdApplication "$Framework"
 
       Write-Output "Verifying signing..."
 
