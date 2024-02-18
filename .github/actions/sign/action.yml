@@ -49,10 +49,16 @@ inputs:
     required: true
     description: |
       Certificate name from get info -> Common name . Eg. Developer ID Application: Common Name (1ABCD23EFG)
+outputs:
+  zip_path:
+    value: ${{ steps.sign.outputs.path }}
+
+
 runs:
   using: composite
   steps:
   - name: Sign
+    id: sign
     shell: pwsh
     run: |
       #!/usr/bin/env pwsh
@@ -147,4 +153,7 @@ runs:
         --password $DevPassword `
         developer_log.json
       get-content developer_log.json
+
+      echo "path=$Archive" >> $env:GITHUB_OUTPUT
+
 
