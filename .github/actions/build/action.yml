@@ -51,6 +51,11 @@ runs:
       run: |
         sudo apt-get update -qq
         sudo apt-get install -qqq build-essential pkg-config
+# Mac only
+    - name: Mac - select xcode
+      shell: sh
+      run: |
+      xcode-select --switch /Applications/Xcode_14.3.app
 # Web only
     - name: Web - Set up Emscripten latest
       if: ${{ inputs.platform == 'web' }}
