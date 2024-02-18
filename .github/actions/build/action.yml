@@ -56,7 +56,7 @@ runs:
       if: ${{ inputs.platform == 'macos' }}
       shell: sh
       run: |
-        xcode-select --switch /Applications/Xcode_14.3.app
+        xcode-select --switch /Applications/Xcode14.3.app
 # Web only
     - name: Web - Set up Emscripten latest
       if: ${{ inputs.platform == 'web' }}
