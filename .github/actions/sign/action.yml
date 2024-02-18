@@ -123,7 +123,7 @@ runs:
 
       Write-Output "Signing '$Framework'..."
 
-      & $CodesignPath --force --verify --timestamp --verbose "$SignFlags" --sign $DeveloperIdApplication "$Framework"
+      & $CodesignPath --verify --timestamp --verbose "$SignFlags" --sign $DeveloperIdApplication "$Framework"
 
       Write-Output "Verifying signing..."
 
@@ -133,7 +133,7 @@ runs:
 
       Write-Output "Archiving framework to '$Archive'..."
 
-      ditto -ck --sequesterRsrc --keepParent "$Framework" "$Archive"
+      ditto -ck -rsrc --sequesterRsrc --keepParent "$Framework" "$Archive"
 
       Write-Output "Submitting archive for notarization..."
 
