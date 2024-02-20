@@ -127,7 +127,7 @@ runs:
 
       Write-Output "Verifying signing..."
 
-      & $CodesignPath --verify -vvv "$Framework"
+      & $CodesignPath --verify -dvvv "$Framework"
 
       Get-ChildItem -Force -Recurse -Path "$Framework"
 
