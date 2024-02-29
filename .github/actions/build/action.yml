@@ -57,7 +57,7 @@ runs:
       uses: mymindstorm/setup-emsdk@v13
       with:
         version: ${{ inputs.em_version }}
-        actions-cache-folder: ${{ inputs.em_cache_folder }}
+        actions-cache-folder: ${{ inputs.em_cache_folder }}.${{ inputs.float-precision }}.${{ inputs.build-target-type }}
     - name: Web - Verify Emscripten setup
       if: ${{ inputs.platform == 'web' }}
       shell: sh
