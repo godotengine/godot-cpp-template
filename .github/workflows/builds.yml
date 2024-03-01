@@ -1,123 +1,144 @@
-name: Builds
-
-on: push
+name: Build GDExtension
+on:
+  workflow_call:
+  push:
 
 env:
   LIBNAME: example
 
-concurrency:
-  group: ci-${{github.actor}}-${{github.head_ref || github.run_number}}-${{github.ref}}-macos
-  cancel-in-progress: true
-
 jobs:
   build:
-    runs-on:  ${{matrix.os}}
-    name: ${{matrix.name}}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - identifier: windows-debug
+          - platform: linux
+            float-precision: single
+            arch: x86_64
+            os: ubuntu-20.04
+          - platform: windows
+            float-precision: single
+            arch: x86_32
             os: windows-latest
-            name: 🏁 Windows Debug
-            target: template_debug
-            platform: windows
+          - platform: windows
+            float-precision: single
             arch: x86_64
-          - identifier: windows-release
             os: windows-latest
-            name: 🏁 Windows Release
-            target: template_release
-            platform: windows
-            arch: x86_64
-          - identifier: macos-debug
-            os: macos-latest
-            name: 🍎 macOS (universal) Debug
-            target: template_debug
-            platform: macos
+          - platform: macos
+            float-precision: single
             arch: universal
-          - identifier: macos-release
             os: macos-latest
-            name: 🍎 macOS (universal) Release
-            target: template_release
-            platform: macos
-            arch: universal
-          - identifier: linux-debug
-            os: ubuntu-latest
-            name: 🐧 Linux Debug
-            runner: ubuntu-20.04
-            target: template_debug
-            platform: linux
+          - platform: android
+            float-precision: single
+            arch: arm64
+            os: ubuntu-20.04
+          - platform: android
+            float-precision: single
+            arch: arm32
+            os: ubuntu-20.04
+          - platform: android
+            float-precision: single
             arch: x86_64
-          - identifier: linux-release
-            os: ubuntu-latest
-            name: 🐧 Linux Release
-            runner: ubuntu-20.04
-            target: template_release
-            platform: linux
-            arch: x86_64
+            os: ubuntu-20.04
+          - platform: android
+            float-precision: single
+            arch: x86_32
+            os: ubuntu-20.04
+          - platform: ios
+            float-precision: single
+            arch: arm64
+            os: macos-latest
+          - platform: web
+            float-precision: single
+            arch: wasm32
+            os: ubuntu-20.04
 
+          - platform: linux
+            float-precision: double
+            arch: x86_64
+            os: ubuntu-20.04
+          - platform: windows
+            float-precision: double
+            arch: x86_32
+            os: windows-latest
+          - platform: windows
+            float-precision: double
+            arch: x86_64
+            os: windows-latest
+          - platform: macos
+            float-precision: double
+            arch: universal
+            os: macos-latest
+          - platform: android
+            float-precision: double
+            arch: arm64
+            os: ubuntu-20.04
+          - platform: android
+            float-precision: double
+            arch: arm32
+            os: ubuntu-20.04
+          - platform: android
+            float-precision: double
+            arch: x86_64
+            os: ubuntu-20.04
+          - platform: android
+            float-precision: double
+            arch: x86_32
+            os: ubuntu-20.04
+          - platform: ios
+            float-precision: double
+            arch: arm64
+            os: macos-latest
+          - platform: web
+            float-precision: double
+            arch: wasm32
+            os: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout project
+      - name: Checkout
         uses: actions/checkout@v3
         with:
-          submodules: recursive
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+          submodules: true
+          fetch-depth: 0
+# Lint
+      #- name: Setup clang-format
+      #  shell: bash
+      #  run: |
+      #    python -m pip install clang-format
+      #- name: Run clang-format
+      #  shell: bash
+      #  run: |
+      #    clang-format src/** --dry-run --Werror
+# Build
+      - name: 🔗 GDExtension Build
+        uses: ./.github/actions/build
         with:
-          python-version: '3.x'
-
-      - name: Set up SCons
-        shell: bash
-        run: |
-          python -c "import sys; print(sys.version)"
-          python -m pip install scons
-          scons --version
-      - name: Linux dependencies
-        if: ${{ matrix.platform == 'linux' }}
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -qqq build-essential pkg-config
-      - name: Setup MinGW for Windows/MinGW build
-        if: ${{ matrix.platform == 'windows' }}
-        uses: egor-tensin/setup-mingw@v2
+          platform: ${{ matrix.platform }}
+          arch: ${{ matrix.arch }}
+          godot-cpp-location: godot-cpp
+          float-precision: ${{ matrix.float-precision }}
+          build-target-type: template_release
+# Sign
+      - name: Mac Sign
+        if: ${{ matrix.platform == 'macos' }}
+        uses: ./.github/actions/sign
         with:
-          version: 12.2.0
+          FRAMEWORK_PATH: bin/macos/macos.framework
+          APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
+          APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}
+          APPLE_DEV_ID: ${{ secrets.APPLE_DEV_ID }}
+          APPLE_DEV_TEAM_ID: ${{ secrets.APPLE_DEV_TEAM_ID }}
+          APPLE_DEV_APP_ID: ${{ secrets.APPLE_DEV_APP_ID }}
 
-      - name: Compile godot-cpp
-        shell: sh
-        run: |
-          scons target='${{ matrix.target }}' platform='${{ matrix.platform }}' arch='${{ matrix.arch }}'
-        working-directory: godot-cpp
-
-      - name: Compile Extension
-        shell: sh
-        run: |
-          scons target='${{ matrix.target }}' platform='${{ matrix.platform }}' arch='${{ matrix.arch }}'
-      - name: Delete compilation files
+      - name: Windows - Delete compilation files
         if: ${{ matrix.platform == 'windows' }}
+        shell: pwsh
         run: |
           Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.event.repository.name }}
+          name: godot-cpp-template
           path: |
-            ${{ github.workspace }}/bin/*
-      - name: Archive Release
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: 'zip'
-          filename: '${{ env.LIBNAME }}.${{ matrix.platform }}.${{ matrix.arch }}.zip'
-          path: '${{ github.workspace }}/bin/'
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-
-      - name: Create and upload asset
-        if: success() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: "${{ env.LIBNAME }}.${{ matrix.platform }}.${{ matrix.arch }}.zip"
-          omitNameDuringUpdate: true
-          omitBodyDuringUpdate: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+            ${{ github.workspace }}/bin/**
