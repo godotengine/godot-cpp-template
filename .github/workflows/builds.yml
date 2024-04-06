@@ -115,12 +115,14 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           arch: ${{ matrix.arch }}
-          godot-cpp-location: godot-cpp
           float-precision: ${{ matrix.float-precision }}
           build-target-type: template_release
 # Sign
       - name: Mac Sign
-        if: ${{ matrix.platform == 'macos' }}
+        # Disable sign if secrets are not set
+        if: ${{ matrix.platform == 'macos' && env.APPLE_CERT_BASE64 }}
+        env:
+          APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
         uses: ./.github/actions/sign
         with:
           FRAMEWORK_PATH: bin/macos/macos.framework

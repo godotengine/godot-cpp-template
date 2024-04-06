@@ -8,9 +8,6 @@ inputs:
   arch:
     required: true
     description: Target architecture.
-  godot-cpp-location:
-    default: 'godot-cpp'
-    description: godot-cpp source code location.
   float-precision:
     default: 'single'
     description: Float precision (single or double).

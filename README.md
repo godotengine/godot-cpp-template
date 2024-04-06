@@ -66,13 +66,25 @@ jobs:
           submodules: true
           fetch-depth: 0
       - name: 🔗 GDExtension Build
-        uses: ughuuu/godot-cpp-template/.github/actions/build@main
+        uses: godotengine/godot-cpp-template/.github/actions/build@main
         with:
           platform: ${{ matrix.platform }}
           arch: ${{ matrix.arch }}
-          godot-cpp-location: godot-cpp
           float-precision: single
           build-target-type: template_release
+      - name: Mac Sign
+        if: ${{ matrix.platform == 'macos' && env.APPLE_CERT_BASE64 }}
+        env:
+          APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
+        uses: godotengine/godot-cpp-template/.github/actions/sign@main
+        with:
+          FRAMEWORK_PATH: bin/macos/macos.framework
+          APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
+          APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}
+          APPLE_DEV_ID: ${{ secrets.APPLE_DEV_ID }}
+          APPLE_DEV_TEAM_ID: ${{ secrets.APPLE_DEV_TEAM_ID }}
+          APPLE_DEV_APP_ID: ${{ secrets.APPLE_DEV_APP_ID }}
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
