@@ -7,6 +7,8 @@ compatibility_minimum = "4.1"
 
 macos.debug = "res://bin/libgdexample.macos.template_debug.framework"
 macos.release = "res://bin/libgdexample.macos.template_release.framework"
+ios.debug = "res://bin/libgdexample.ios.template_debug.framework"
+ios.release = "res://bin/libgdexample.ios.template_release.framework"
 windows.debug.x86_32 = "res://bin/libgdexample.windows.template_debug.x86_32.dll"
 windows.release.x86_32 = "res://bin/libgdexample.windows.template_release.x86_32.dll"
 windows.debug.x86_64 = "res://bin/libgdexample.windows.template_debug.x86_64.dll"

@@ -5,8 +5,23 @@ This repository serves as a quickstart template for GDExtension development with
 * An empty Godot project (`demo/`)
 * godot-cpp as a submodule (`godot-cpp/`)
 * GitHub Issues template (`.github/ISSUE_TEMPLATE.yml`)
-* GitHub CI/CD to publish your library packages when creating a release (`.github/workflows/builds.yml`)
+* GitHub CI/CD workflows to publish your library packages when creating a release (`.github/workflows/builds.yml`)
+* GitHub CI/CD actions to build (`.github/actions/build/action.yml`) and to sign Mac frameworks (`.github/actions/build/sign.yml`).
 * preconfigured source files for C++ development of the GDExtension (`src/`)
+
+## Usage - Template
+
+To use this template, log in to GitHub and click the green "Use this template" button at the top of the repository page.
+This will let you create a copy of this repository with a clean git history. Make sure you clone the correct branch as these are configured for development of their respective Godot development branches and differ from each other. Refer to the docs to see what changed between the versions.
+
+For getting started after cloning your own copy to your local machine, you should: 
+* initialize the godot-cpp git submodule via `git submodule update --init`
+* change the name of your library
+  * change the name of the compiled library file inside the `SConstruct` file by modifying the `libname` string.
+  * change the pathnames of the to be loaded library name inside the `demo/bin/example.gdextension` file. By replacing `libgdexample` to the name specified in your `SConstruct` file.
+  * change the name of the `demo/bin/example.gdextension` file
+* change the `entry_symbol` string inside your `demo/bin/your-extension.gdextension` file to be configured for your GDExtension name. This should be the same as the `GDExtensionBool GDE_EXPORT` external C function. As the name suggests, this sets the entry function for your GDExtension to be loaded by the Godot editors C API.
+* register the classes you want Godot to interact with inside the `register_types.cpp` file in the initialization method (here `initialize_gdextension_types`) in the syntax `ClassDB::register_class<CLASS-NAME>();`.
 
 ## Usage - Actions
 
@@ -16,7 +31,8 @@ The action uses SConstruct for both godot-cpp and the GDExtension that is built.
 
 To reuse the build actions, in a github actions yml file, do the following:
 
-```name: Build GDExtension
+```yml
+name: Build GDExtension
 on:
   workflow_call:
   push:
@@ -72,6 +88,13 @@ jobs:
           arch: ${{ matrix.arch }}
           float-precision: single
           build-target-type: template_release
+      - name: 🔗 GDExtension Build
+        uses: ./.github/actions/build
+        with:
+          platform: ${{ matrix.platform }}
+          arch: ${{ matrix.arch }}
+          float-precision: ${{ matrix.float-precision }}
+          build-target-type: template_debug
       - name: Mac Sign
         if: ${{ matrix.platform == 'macos' && env.APPLE_CERT_BASE64 }}
         env:
@@ -91,12 +114,59 @@ jobs:
           name: GDExtension
           path: |
             ${{ github.workspace }}/bin/**
-
 ```
 
-## Usage - Signing
+The above example is a lengthy one, so we will go through it action by action to see what is going on.
 
-You will need:
+In the `Checkout` step, we checkout the code.
+In the `🔗 GDExtension Build` step, we are using the reusable action:
+```yml
+uses: godotengine/godot-cpp-template/.github/actions/build@main
+with:
+  platform: ${{ matrix.platform }}
+  arch: ${{ matrix.arch }}
+  float-precision: single
+  build-target-type: template_release
+```
+with the parameters from the matrix.
+
+As a result of this step, the binaries will be built in the `bin` folder (as specified in the SConstruct file).
+
+Note: for macos, you will have to build the binary as a `.dylib` in a `EXTENSION-NAME.framework` folder. The framework folder should also have a `Resources` folder with a file called `Info.plist`. Without this file, signing will fail.
+
+Note: for iOS, the same should be as for MacOS, however the `Info.plist` file needs to be close to the `.dylib`, instead of in a `Resources` folder (If this is not done, the build will fail to upload to the App Store).
+
+So, in our case, the builds should be:
+
+```sh
+bin/EXTENSION-NAME.macos.template_debug.framework/EXTENSION-NAME.macos.template_release
+bin/EXTENSION-NAME.ios.template_debug.framework/EXTENSION-NAME.ios.template_release.arm64.dylib
+
+Afterwards, you want to set in the `.gdextension` file the paths to the `.framework` folder, instead of the `.dylib` file (Note that for the `.dylib` binary, the extension is not needed, you could have a file without any extension and it would still work).
+
+In the `name: Mac Sign` step, we are signing the generated mac binaries.
+We are reusing the following action:
+```yml
+uses: godotengine/godot-cpp-template/.github/actions/sign@main
+with:
+  FRAMEWORK_PATH: bin/macos/macos.framework
+  APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
+  APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+  APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}
+  APPLE_DEV_ID: ${{ secrets.APPLE_DEV_ID }}
+  APPLE_DEV_TEAM_ID: ${{ secrets.APPLE_DEV_TEAM_ID }}
+  APPLE_DEV_APP_ID: ${{ secrets.APPLE_DEV_APP_ID }}
+```
+As you can see, this action requires some secrets to be configured in order to run. Also, you need to tell it the path to the `.framework` folder, where you have both the binary (`.dylib` file) and the `Resources` folder with the `Info.plist` file.
+
+## Configuration - Mac Signing Secrets
+
+In order to sign the Mac binary, you need to configure the following secrets:
+`APPLE_CERT_BASE64`, `APPLE_CERT_PASSWORD`, `APPLE_DEV_PASSWORD`, `APPLE_DEV_ID`, `APPLE_DEV_TEAM_ID`, `APPLE_DEV_APP_ID`. These secrets are stored in the example above in the Github secrets for repositories. The names of the secrets have to match the names of the secrets you use for your action. For more on this, read the [Creating secrets for a repository](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) article from Github.
+
+These secrets are then passed down to the `godotengine/godot-cpp-template/.github/actions/sign@main` action that signs the binary.
+
+In order to configure these secrets, you will need:
 
 - A Mac
 - An Apple ID enrolled in Apple Developer Program (99 USD per year)
@@ -159,20 +229,21 @@ base64 -i Certificates.p12 -o Certificates.base64
 
 - Copy the contents of the generated file:
 Eg.
-- APPLE_CERT_BASE64 = `...`(A long text file)
+- `APPLE_CERT_BASE64` = `...`(A long text file)
 
-- While still
+After these secrets are obtained, all that remains is to set them in Github secrets and then use them in the Github action, eg. in the above Github action usage example, this part:
 
-## Usage - Template
-
-To use this template, log in to GitHub and click the green "Use this template" button at the top of the repository page.
-This will let you create a copy of this repository with a clean git history. Make sure you clone the correct branch as these are configured for development of their respective Godot development branches and differ from each other. Refer to the docs to see what changed between the versions.
-
-For getting started after cloning your own copy to your local machine, you should: 
-* initialize the godot-cpp git submodule via `git submodule update --init`
-* change the name of your library
-  * change the name of the compiled library file inside the `SConstruct` file by modifying the `libname` string.
-  * change the pathnames of the to be loaded library name inside the `demo/bin/example.gdextension` file. By replacing `libgdexample` to the name specified in your `SConstruct` file.
-  * change the name of the `demo/bin/example.gdextension` file
-* change the `entry_symbol` string inside your `demo/bin/your-extension.gdextension` file to be configured for your GDExtension name. This should be the same as the `GDExtensionBool GDE_EXPORT` external C function. As the name suggests, this sets the entry function for your GDExtension to be loaded by the Godot editors C API.
-* register the classes you want Godot to interact with inside the `register_types.cpp` file in the initialization method (here `initialize_gdextension_types`) in the syntax `ClassDB::register_class<CLASS-NAME>();`.
+```
+- name: Mac Sign
+  if: ${{ matrix.platform == 'macos' && env.APPLE_CERT_BASE64 }}
+  env:
+    APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
+  uses: godotengine/godot-cpp-template/.github/actions/sign@main
+  with:
+    FRAMEWORK_PATH: bin/macos/macos.framework
+    APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
+    APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+    APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}
+    APPLE_DEV_ID: ${{ secrets.APPLE_DEV_ID }}
+    APPLE_DEV_TEAM_ID: ${{ secrets.APPLE_DEV_TEAM_ID }}
+```
