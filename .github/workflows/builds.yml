@@ -12,111 +12,97 @@ jobs:
       fail-fast: false
       matrix:
         include:
+        # Debug templates
           - platform: linux
             float-precision: single
             arch: x86_64
-            os: ubuntu-20.04
-          - platform: windows
-            float-precision: single
-            arch: x86_32
-            os: windows-latest
-          - platform: windows
-            float-precision: single
-            arch: x86_64
-            os: windows-latest
-          - platform: macos
-            float-precision: single
-            arch: universal
-            os: macos-latest
-          - platform: android
-            float-precision: single
-            arch: arm64
-            os: ubuntu-20.04
-          - platform: android
-            float-precision: single
-            arch: arm32
-            os: ubuntu-20.04
-          - platform: android
-            float-precision: single
-            arch: x86_64
-            os: ubuntu-20.04
-          - platform: android
-            float-precision: single
-            arch: x86_32
-            os: ubuntu-20.04
-          - platform: ios
-            float-precision: single
-            arch: arm64
-            os: macos-latest
-          - platform: web
-            float-precision: single
-            arch: wasm32
+            target-type: template_debug
             os: ubuntu-20.04
 
+          - platform: windows
+            float-precision: single
+            arch: x86_32
+            target-type: template_debug
+            os: windows-latest
+
+          - platform: windows
+            float-precision: single
+            arch: x86_64
+            target-type: template_debug
+            os: windows-latest
+
+          - platform: macos
+            float-precision: single
+            arch: universal
+            target-type: template_debug
+            os: macos-latest
+
+          - platform: android
+            float-precision: single
+            arch: arm64
+            target-type: template_debug
+            os: ubuntu-20.04
+
+          - platform: android
+            float-precision: single
+            arch: arm32
+            target-type: template_debug
+            os: ubuntu-20.04
+
+          - platform: android
+            float-precision: single
+            arch: x86_64
+            target-type: template_debug
+            os: ubuntu-20.04
+
+          - platform: android
+            float-precision: single
+            arch: x86_32
+            target-type: template_debug
+            os: ubuntu-20.04
+
+          - platform: ios
+            float-precision: single
+            arch: arm64
+            target-type: template_debug
+            os: macos-latest
+
+          - platform: web
+            float-precision: single
+            arch: wasm32
+            target-type: template_debug
+            os: ubuntu-20.04
+
+        # Release templates
+          - platform: linux
+            float-precision: single
+            arch: x86_64
+            target-type: template_release
+            os: ubuntu-20.04
+
+        # Double precision templates
           - platform: linux
             float-precision: double
             arch: x86_64
-            os: ubuntu-20.04
-          - platform: windows
-            float-precision: double
-            arch: x86_32
-            os: windows-latest
-          - platform: windows
-            float-precision: double
-            arch: x86_64
-            os: windows-latest
-          - platform: macos
-            float-precision: double
-            arch: universal
-            os: macos-latest
-          - platform: android
-            float-precision: double
-            arch: arm64
-            os: ubuntu-20.04
-          - platform: android
-            float-precision: double
-            arch: arm32
-            os: ubuntu-20.04
-          - platform: android
-            float-precision: double
-            arch: x86_64
-            os: ubuntu-20.04
-          - platform: android
-            float-precision: double
-            arch: x86_32
-            os: ubuntu-20.04
-          - platform: ios
-            float-precision: double
-            arch: arm64
-            os: macos-latest
-          - platform: web
-            float-precision: double
-            arch: wasm32
+            target-type: template_release
             os: ubuntu-20.04
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
-# Lint
-      #- name: Setup clang-format
-      #  shell: bash
-      #  run: |
-      #    python -m pip install clang-format
-      #- name: Run clang-format
-      #  shell: bash
-      #  run: |
-      #    clang-format src/** --dry-run --Werror
+
 # Build
-      - name: 🔗 GDExtension Build
+      - name: 🔗 GDExtension Debug Build
         uses: ./.github/actions/build
         with:
           platform: ${{ matrix.platform }}
           arch: ${{ matrix.arch }}
           float-precision: ${{ matrix.float-precision }}
-          build-target-type: template_release
+          build-target-type: ${{ matrix.target-type }}
+
 # Sign
       - name: Mac Sign
         # Disable sign if secrets are not set
@@ -139,8 +125,18 @@ jobs:
         run: |
           Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: godot-cpp-template
+          name: godot-cpp-template-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.float-precision }}-${{ matrix.target-type }}
           path: |
             ${{ github.workspace }}/bin/**
+  merge:
+    runs-on: ubuntu-20.04
+    needs: build
+    steps:
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: godot-cpp-template
+          pattern: godot-cpp-template-*
+          delete-merged: true
