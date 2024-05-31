@@ -264,6 +264,16 @@ jobs:
           submodules: true
           fetch-depth: 0
 
+# Lint
+      #- name: Setup clang-format
+      #  shell: bash
+      #  run: |
+      #    python -m pip install clang-format
+      #- name: Run clang-format
+      #  shell: bash
+      #  run: |
+      #    clang-format src/** --dry-run --Werror
+
 # Build
       - name: 🔗 GDExtension Debug Build
         uses: ./.github/actions/build
