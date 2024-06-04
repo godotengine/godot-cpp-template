@@ -28,19 +28,32 @@ runs:
   using: composite
   steps:
 # Android only
-    - name: Android - Set up Java 11
-      uses: actions/setup-java@v3
+    - name: Android - Set up Java 17
+      uses: actions/setup-java@v4
       if: ${{ inputs.platform == 'android' }}
       with:
         distribution: temurin
-        java-version: 11
+        java-version: 17
 
-    - name: Android - dependencies
-      uses: nttld/setup-ndk@v1
+    - name: Android - Remove existing Android SDK, and set up ENV vars
       if: ${{ inputs.platform == 'android' }}
+      shell: sh
+      run: |
+        sudo rm -r /usr/local/lib/android/sdk/**
+        export ANDROID_HOME=/usr/local/lib/android/sdk
+        export ANDROID_SDK_ROOT=$ANDROID_HOME
+        export ANDROID_NDK_VERSION=23.2.8568313
+        export ANDROID_NDK_ROOT=${ANDROID_SDK_ROOT}/ndk/${ANDROID_NDK_VERSION}
+        echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+        echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+        echo "ANDROID_NDK_VERSION=$ANDROID_NDK_VERSION" >> "$GITHUB_ENV"
+        echo "ANDROID_NDK_ROOT=$ANDROID_NDK_ROOT" >> "$GITHUB_ENV"
+
+    - name: Android - Set up Android SDK
+      if: ${{ inputs.platform == 'android' }}
+      uses: android-actions/setup-android@v3
       with:
-        ndk-version: r23c
-        link-to-sdk: true
+        packages: "ndk;${{ env.ANDROID_NDK_VERSION }} cmdline-tools;latest build-tools;34.0.0 platforms;android-34 cmake;3.22.1"
 # Linux only
     - name: Linux - dependencies
       if: ${{ inputs.platform == 'linux' }}
@@ -69,7 +82,7 @@ runs:
 # Dependencies of godot
     # Use python 3.x release (works cross platform)
     - name: Set up Python 3.x
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         # Semantic version range syntax or exact version of a Python version
         python-version: "3.x"
@@ -83,7 +96,7 @@ runs:
         scons --version
 # Build
     - name: Cache .scons_cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ${{ github.workspace }}/${{ inputs.gdextension-location }}/${{ inputs.scons-cache }}/
