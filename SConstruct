@@ -57,7 +57,7 @@ file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
 
 if env["platform"] == "macos" or env["platform"] == "ios":
     platlibname = "{}.{}.{}".format(libname, env["platform"], env["target"])
-    file = "{}.framework/{}".format(env["platform"], platlibname, platlibname)
+    file = "{}.framework/{}".format(platlibname, platlibname)
 
 libraryfile = "bin/{}/{}".format(env["platform"], file)
 library = env.SharedLibrary(
@@ -65,7 +65,7 @@ library = env.SharedLibrary(
     source=sources,
 )
 
-copy = env.InstallAs("{}/bin/{}/lib{}".format(projectdir, env["platform"], file), library)
+copy = env.InstallAs("{}/bin/{}/{}".format(projectdir, env["platform"], file), library)
 
 default_args = [library, copy]
 if localEnv.get("compiledb", False):
