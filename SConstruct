@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 import os
+import sys
+
+from methods import print_error
 
 
 def normalize_path(val, env):
@@ -47,6 +50,19 @@ compilation_db = env.CompilationDatabase(
     normalize_path(localEnv["compiledb_file"], localEnv)
 )
 env.Alias("compiledb", compilation_db)
+
+submodule_initialized = False
+dir_name = 'godot-cpp'
+if os.path.isdir(dir_name):
+    if os.listdir(dir_name):
+        submodule_initialized = True
+
+if not submodule_initialized:
+    print_error("""godot-cpp is not available within this folder, as Git submodules haven't been initialized.
+Run the following command to download godot-cpp:
+
+    git submodule update --init --recursive""")
+    sys.exit(1)
 
 env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
