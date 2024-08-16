@@ -8,6 +8,7 @@ This repository serves as a quickstart template for GDExtension development with
 * GitHub CI/CD workflows to publish your library packages when creating a release (`.github/workflows/builds.yml`)
 * GitHub CI/CD actions to build (`.github/actions/build/action.yml`) and to sign Mac frameworks (`.github/actions/build/sign.yml`).
 * preconfigured source files for C++ development of the GDExtension (`src/`)
+* setup to automatically generate `.xml` files in a `doc_classes/` directory to be parsed by Godot as [GDExtension built-in documentation](https://docs.godotengine.org/en/stable/tutorials/scripting/gdextension/gdextension_docs_system.html)
 
 ## Usage - Template
 
