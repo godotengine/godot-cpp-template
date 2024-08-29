@@ -1,21 +1,26 @@
+# Visual Studio
+.sln/
+
+*.sln.lnk
+
 # Godot 4+ specific ignores
 .godot/
 
 # Ignore library files but not the gdextension file
-demo/bin/*
-!demo/bin/android
-demo/bin/android/*
-!demo/bin/android/.gitkeep
-!demo/bin/linux
-demo/bin/linux/*
-!demo/bin/linux/.gitkeep
-!demo/bin/macos
-demo/bin/macos/*
-!demo/bin/macos/.gitkeep
-!demo/bin/windows
-demo/bin/windows/*
-!demo/bin/windows/.gitkeep
-!demo/bin/*.gdextension
+demo/client/bin/*
+!demo/client/bin/android
+demo/client/bin/android/*
+!demo/client/bin/android/.gitkeep
+!demo/client/bin/linux
+demo/client/bin/linux/*
+!demo/client/bin/linux/.gitkeep
+!demo/client/bin/macos
+demo/client/bin/macos/*
+!demo/client/bin/macos/.gitkeep
+!demo/client/bin/windows
+demo/client/bin/windows/*
+!demo/client/bin/windows/.gitkeep
+!demo/client/bin/*.gdextension
 .sconsign*.dblite
 
 # Ignore custom.py

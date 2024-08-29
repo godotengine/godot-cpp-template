@@ -1,8 +1,12 @@
-# godot-cpp template
-This repository serves as a quickstart template for GDExtension development with Godot 4.0+.
+# Godot-Kafka
+[![Build GDExtension](https://github.com/bsmithcompsci/godot-kafka-multiplayer-peer/actions/workflows/builds.yml/badge.svg)](https://github.com/bsmithcompsci/godot-kafka-multiplayer-peer/actions/workflows/builds.yml)
+
+Godot-Kafka is a GDExtension for Godot 4.x+. 
+
 
 ## Contents
-* An empty Godot project (`demo/`)
+* An empty Godot project (`demo/client`)
+* Multiple Edge Services in various languages (`demo/server`)
 * godot-cpp as a submodule (`godot-cpp/`)
 * GitHub Issues template (`.github/ISSUE_TEMPLATE.yml`)
 * GitHub CI/CD workflows to publish your library packages when creating a release (`.github/workflows/builds.yml`)

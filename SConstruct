@@ -11,8 +11,8 @@ def validate_parent_dir(key, val, env):
         raise UserError("'%s' is not a directory: %s" % (key, os.path.dirname(val)))
 
 
-libname = "EXTENSION-NAME"
-projectdir = "demo"
+libname = "godot-kafka"
+projectdir = "demo/client"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
 
