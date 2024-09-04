@@ -47,6 +47,15 @@ set_target_properties(godot-cpp PROPERTIES FOLDER "External/Godot")
 set(RDKAFKA_BUILD_EXAMPLES OFF)
 set(RDKAFKA_BUILD_TESTS OFF)
 add_subdirectory(extern/librdkafka)
-target_link_libraries(GodotKafka PRIVATE rdkafka)
+target_link_libraries(GodotKafka PRIVATE rdkafka) # rdkafka is the C library and the core.
+target_link_libraries(GodotKafka PRIVATE rdkafka++) # rdkafka++ is a C++ wrapper around librdkafka
 set_target_properties(rdkafka PROPERTIES FOLDER "External/rdkafka")
 set_target_properties(rdkafka++ PROPERTIES FOLDER "External/rdkafka")
+
+find_package(OpenSSL REQUIRED)
+
+if(OPENSSL_FOUND)
+    message(STATUS "Found OpenSSL: ${OPENSSL_VERSION}")
+    include_directories(${OPENSSL_INCLUDE_DIR})
+    link_libraries(OpenSSL::Crypto) 
+endif()

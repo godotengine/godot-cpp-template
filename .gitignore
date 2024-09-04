@@ -3,54 +3,19 @@
 
 *.sln.lnk
 
-# Godot 4+ specific ignores
-.godot/
+# Locks
+/*.lock
 
-# Ignore library files but not the gdextension file
-demo/client/bin/*
-!demo/client/bin/android
-demo/client/bin/android/*
-!demo/client/bin/android/.gitkeep
-!demo/client/bin/linux
-demo/client/bin/linux/*
-!demo/client/bin/linux/.gitkeep
-!demo/client/bin/macos
-demo/client/bin/macos/*
-!demo/client/bin/macos/.gitkeep
-!demo/client/bin/windows
-demo/client/bin/windows/*
-!demo/client/bin/windows/.gitkeep
-!demo/client/bin/*.gdextension
+# scons db
 .sconsign*.dblite
 
-# Ignore custom.py
-custom.py
+# Rust
+/target/
 
-# Ignore generated compile_commands.json
-compile_commands.json
+# Exports
+export/*
+!export/client/.gitkeep
+!export/server/.gitkeep
 
-# Binaries
-*.o
-*.os
-*.so
+# C++
 *.obj
-*.bc
-*.pyc
-*.dblite
-*.pdb
-*.lib
-*.config
-*.creator
-*.creator.user
-*.files
-*.includes
-*.idb
-*.exp
-
-# Other stuff
-*.log
-
-# VSCode
-.vscode/*
-!.vscode/extensions.json
-.DS_Store
