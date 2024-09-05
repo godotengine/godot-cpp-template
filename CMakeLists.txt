@@ -5,6 +5,8 @@ project(
     LANGUAGES CXX
 )
 
+option(BUILD_TESTS "Build the tests" ON)
+
 # Generate the project files
 # execute_process(
 # COMMAND scons
@@ -30,8 +32,12 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "$<1:${PROJECT_SOURCE_DIR}/demo/server/addons
 set(CMAKE_SHARED_LIBRARY_PREFIX "lib")
 
 # Glob all sources files.
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE HEADERS "src/*.hpp" "src/*.h")
+file(GLOB_RECURSE GODOT_SOURCES "src/godotkafka/*.cpp")
+file(GLOB_RECURSE GODOT_HEADERS "src/godotkafka/*.hpp" "src/godotkafka/*.h")
+file(GLOB_RECURSE TEST_SOURCES "src/test/*.cpp")
+file(GLOB_RECURSE TEST_HEADERS "src/test/*.hpp" "src/test/*.h")
+file(GLOB_RECURSE LIB_SOURCES "src/kafkalib/*.cpp")
+file(GLOB_RECURSE LIB_HEADERS "src/kafkalib/*.hpp" "src/kafkalib/*.h" "include/kafkalib/*.hpp" "include/kafkalib/*.h")
 
 # Include OpenSSL
 set(OPENSSL_USE_STATIC_LIBS TRUE)
@@ -59,21 +65,41 @@ if (SSL_LIB)
     link_libraries(${SSL_LIB})
 endif()
 
+add_library(KafkaLib STATIC 
+    ${LIB_SOURCES}
+    ${LIB_HEADERS}
+)
+target_include_directories(KafkaLib PUBLIC include/kafkalib)
+
 add_library(GodotKafka SHARED
-    ${SOURCES}
-    ${HEADERS}
+    ${GODOT_SOURCES}
+    ${GODOT_HEADERS}
 )
 
 # Include Godot::cpp
 add_subdirectory(godot-cpp)
 target_link_libraries(GodotKafka PRIVATE godot::cpp)
+target_link_libraries(GodotKafka PRIVATE KafkaLib)
 set_target_properties(godot-cpp PROPERTIES FOLDER "External/Godot")
 
 # Include librdkafka
 set(RDKAFKA_BUILD_EXAMPLES OFF)
 set(RDKAFKA_BUILD_TESTS OFF)
+set(RDKAFKA_BUILD_STATIC ON)
 add_subdirectory(extern/librdkafka)
-target_link_libraries(GodotKafka PRIVATE rdkafka) # rdkafka is the C library and the core.
-target_link_libraries(GodotKafka PRIVATE rdkafka++) # rdkafka++ is a C++ wrapper around librdkafka
+target_link_libraries(KafkaLib PUBLIC rdkafka) # rdkafka is the C library and the core.
+target_link_libraries(KafkaLib PUBLIC rdkafka++) # rdkafka++ is a C++ wrapper around librdkafka
 set_target_properties(rdkafka PROPERTIES FOLDER "External/rdkafka")
 set_target_properties(rdkafka++ PROPERTIES FOLDER "External/rdkafka")
+
+if (BUILD_TESTS)
+    add_executable(TestKafkaLib 
+        ${TEST_SOURCES}
+        ${TEST_HEADERS}
+    )
+
+    target_link_libraries(TestKafkaLib PRIVATE KafkaLib)
+
+    # Force Visual Studio to set this target as the startup project
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT TestKafkaLib)
+endif()

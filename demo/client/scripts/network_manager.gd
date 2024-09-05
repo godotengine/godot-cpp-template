@@ -3,13 +3,15 @@ extends Node
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	init_network("localhost:9092")
+	pass
 
 func init_network(host: String) -> MultiplayerPeer:
 	var socket: MultiplayerPeer;
 	#if OS.has_feature("dedicated_server"):
 	print("Connecting to Kafka Broker: ", host)
 	var kafka: KafkaMultiplayerPeer = KafkaMultiplayerPeer.new();
+	kafka.register_admin_channel(host, "super")
 	kafka.register_publisher("server-to-client", host, 1);
 	kafka.register_subscriber(["client-to-server"], host, "group-name", 1);
 	socket = kafka;
