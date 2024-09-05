@@ -21,7 +21,7 @@ class Kafka::KafkaController::InternalDeliveryReportCb : public RdKafka::Deliver
 public:
 	~InternalDeliveryReportCb()
 	{
-		printf("DeliveryReportCb destroyed\n");
+		//printf("DeliveryReportCb destroyed\n");
 	}
 
 	void set_callback(std::function<void(RdKafka::Message &)> cb) {
@@ -49,7 +49,7 @@ public:
 
 	~InternalRebalanceCb()
 	{
-		printf("RebalanceCb destroyed\n");
+		//printf("RebalanceCb destroyed\n");
 	}
 
 	void set_callback(std::function<void(RdKafka::KafkaConsumer *, RdKafka::ErrorCode, std::vector<RdKafka::TopicPartition *> &)> cb) {
@@ -68,7 +68,7 @@ public:
 
 	~InternalLogger()
 	{
-		printf("Logger destroyed\n");
+		//printf("Logger destroyed\n");
 	}
 
 	void set_callback(std::function<void(const LogLevel logLevel, const std::string &message)> cb) {
@@ -131,6 +131,11 @@ static RdKafka::KafkaConsumer *create_consumer(const std::string &brokers, const
 
 	// Set the rebalance callback
 	if (conf->set("rebalance_cb", &rebalance_cb, errstr) != RdKafka::Conf::CONF_OK) {
+		return nullptr;
+	}
+
+	// Set the auto offset reset to earliest.
+	if (conf->set("auto.offset.reset", "earliest", errstr) != RdKafka::Conf::CONF_OK) {
 		return nullptr;
 	}
 
@@ -204,12 +209,15 @@ void Kafka::KafkaController::add_producer(const std::string &brokers, const std:
 
 	// Set the delivery report callback
 	deliveryReportCb->set_callback([this](RdKafka::Message &message) {
-		printf("Message delivered to partition %d at offset %" PRId64 "\n", message.partition(), message.offset());
+		//printf("Message delivered to partition %d at offset %" PRId64 "\n", message.partition(), message.offset());
 
 		if (message.err())
 		{
 			if (m_error_callback)
 				m_error_callback("Message delivery failed: " + RdKafka::err2str(message.err()));
+		} else {
+			if (m_log_callback && m_log_level >= LogLevel::DEBUG)
+				m_log_callback(LogLevel::DEBUG, "Message delivered to partition " + std::to_string(message.partition()) + " at offset " + std::to_string(message.offset()));
 		}
 	});
 	loggerCb->set_callback([this](const LogLevel logLevel, const std::string &message) {
@@ -241,8 +249,7 @@ void Kafka::KafkaController::add_producer(const std::string &brokers, const std:
 	m_producers[channel].push_back(producerContext);
 }
 
-void Kafka::KafkaController::add_consumer(const std::string &brokers, const std::string &topic, const std::string &group_id, const uint32_t channel)
-{
+void Kafka::KafkaController::add_consumer(const std::string &brokers, const std::vector<std::string> &topics, const std::string &group_id, const uint32_t channel) {
 	std::string errstr;
 	std::shared_ptr<InternalRebalanceCb> rebalance_cb;
 	std::shared_ptr<InternalLogger> loggerCb;
@@ -286,24 +293,19 @@ void Kafka::KafkaController::add_consumer(const std::string &brokers, const std:
 			m_log_callback(logLevel, message);
 	});
 
-	// Create topic handle
-	RdKafka::Topic *rd_topic = RdKafka::Topic::create(consumer, topic, nullptr, errstr);
+	// Subscribe.
+	consumer->subscribe(topics);
 
 	// Create shared objects.
 	std::shared_ptr<RdKafka::KafkaConsumer> consumer_shared(consumer);
-	std::shared_ptr<RdKafka::Topic> topic_shared(rd_topic);
 	std::shared_ptr<InternalLogger> loggerCb_shared(loggerCb);
 	std::shared_ptr<InternalRebalanceCb> rebalance_cb_shared(rebalance_cb);
 
 	// Create Context, if it doesn't exist.
 	if (m_consumers.find(channel) == m_consumers.end())
 	{
-		// Create the thread.
-		std::thread *consumer_thread = new std::thread(&KafkaController::_consumer_thread, this, m_consumers[channel], channel);
-		std::shared_ptr<std::thread> thread_shared(consumer_thread);
-
 		std::shared_ptr<ConsumerContext> consumerContext = std::make_shared<ConsumerContext>(
-			thread_shared,
+			channel,
 			std::vector<std::shared_ptr<RdKafka::KafkaConsumer>>(),
 			loggerCb_shared,
 			rebalance_cb_shared
@@ -313,7 +315,7 @@ void Kafka::KafkaController::add_consumer(const std::string &brokers, const std:
 	}
 
 	// Add the consumer to the vector.
-	m_consumers[channel]->get_consumers().push_back(consumer_shared);
+	m_consumers[channel]->add_consumer(consumer_shared);
 
 	// Wait until the consumer is connected.
 	//  Timeout after the MAX_TIMEOUT_MS.
@@ -374,6 +376,8 @@ bool Kafka::KafkaController::send(const uint32_t channel, const void *data, cons
 					0,
 					nullptr);
 		}
+
+		producer->get_producer()->flush(MAX_TIMEOUT_MS);
 
 		if (err) {
 			if (m_error_callback)
@@ -449,11 +453,6 @@ void Kafka::KafkaController::set_log_callback(const std::function<void(const Log
 void Kafka::KafkaController::set_error_callback(const std::function<void(const std::string &message)> callback)
 {
 	m_error_callback = callback;
-}
-
-void Kafka::KafkaController::_consumer_thread(std::shared_ptr<ConsumerContext> &consumer, const uint32_t channel)
-{
-	std::printf("Consumer thread started : %s\n", std::to_string(channel).c_str());
 }
 
 /// ------------------------- Packet ------------------------- ///
@@ -604,5 +603,34 @@ std::shared_ptr<Kafka::KafkaController::InternalRebalanceCb> Kafka::KafkaControl
 }
 
 std::vector<std::shared_ptr<RdKafka::KafkaConsumer>> Kafka::KafkaController::ConsumerContext::get_consumers() const {
-	return std::vector<std::shared_ptr<RdKafka::KafkaConsumer>>();
+	return consumers;
+}
+
+void Kafka::KafkaController::ConsumerContext::add_consumer(std::shared_ptr<RdKafka::KafkaConsumer> consumer) {
+	consumers.emplace_back(std::move(consumer));
+}
+
+void Kafka::KafkaController::ConsumerContext::_consumer_thread(const uint32_t channel)
+{
+
+	while (is_running())
+	{
+		std::vector<std::shared_ptr<Packet>> packets;
+		for (auto &consumer : consumers)
+		{
+			RdKafka::Message *message = consumer->consume(1000);
+			if (message->err() == RdKafka::ERR_NO_ERROR)
+			{
+				std::shared_ptr<Packet> packet = std::make_shared<Packet>(new int8_t[message->len()], message->len());
+				memcpy(packet->get_data(), message->payload(), packet->get_size());
+				packets.push_back(packet);
+			}
+			delete message;
+		}
+
+		for (auto &packet : packets) {
+			PacketNode *node = new PacketNode(packet);
+			push_next_packet(node);
+		}
+	}
 }

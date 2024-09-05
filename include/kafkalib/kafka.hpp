@@ -21,7 +21,7 @@ namespace Kafka
 {
 class Packet {
 public:
-	Packet(int8_t *data, uint32_t size) :
+	Packet(int8_t *data, size_t size) :
 			data(data), size(size) {}
 
 	~Packet();
@@ -32,7 +32,7 @@ public:
 	uint32_t get_size() const;
 private:
 	int8_t *data;
-	uint32_t size;
+	size_t size;
 };
 
 class PacketNode {
@@ -105,7 +105,7 @@ public:
 	/// <param name="topic"></param>
 	/// <param name="group_id"></param>
 	/// <param name="channel"></param>
-	void add_consumer(const std::string &brokers, const std::string &topic, const std::string &group_id, const uint32_t channel);
+	void add_consumer(const std::string &brokers, const std::vector<std::string> &topics, const std::string &group_id, const uint32_t channel);
 
 	/// <summary>
 	/// Clears all producers of a channel.
@@ -210,11 +210,14 @@ private:
 	{
 	public:
 		ConsumerContext(
-			std::shared_ptr<std::thread> thread,
+			const uint32_t channel,
 			std::vector<std::shared_ptr<RdKafka::KafkaConsumer>> consumers,
 			std::shared_ptr<InternalLogger> logger,
 			std::shared_ptr<InternalRebalanceCb> rebalance_cb
-		) : thread(thread), consumers(consumers), logger(logger), rebalance_cb(rebalance_cb) {}
+		) : consumers(consumers), logger(logger), rebalance_cb(rebalance_cb), running(true)
+		{
+			thread = std::make_shared<std::thread>(&ConsumerContext::_consumer_thread, this, channel);
+		}
 
 		~ConsumerContext();
 
@@ -235,7 +238,10 @@ private:
 		std::shared_ptr<InternalRebalanceCb> get_rebalance_cb() const;
 
 		std::vector<std::shared_ptr<RdKafka::KafkaConsumer>> get_consumers() const;
+		void add_consumer(std::shared_ptr<RdKafka::KafkaConsumer> consumer);
 	private:
+		void _consumer_thread(const uint32_t channel);
+
 		std::atomic<PacketNode *> next_packet_head;
 		std::atomic<PacketNode *> next_packet_tail;
 		std::atomic<uint32_t> packet_count;
@@ -257,7 +263,5 @@ private:
 
 	std::map<uint32_t, std::vector<std::shared_ptr<ProducerContext>>> m_producers;
 	std::map<uint32_t, std::shared_ptr<ConsumerContext>> m_consumers;
-
-	void _consumer_thread(std::shared_ptr<ConsumerContext> &consumer, const uint32_t channel);
 };
 }

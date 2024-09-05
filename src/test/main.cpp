@@ -41,7 +41,7 @@ int main()
 	std::string brokers = "localhost:19092";
 
 	// Settings.
-	controller.set_log_level(Kafka::LogLevel::DEBUG);
+	controller.set_log_level(Kafka::LogLevel::INFO);
 	printf("Log level set.\n");
 
 	controller.set_log_callback(log_callback);
@@ -56,7 +56,7 @@ int main()
 	controller.add_producer(brokers, "test", 1);
 	printf("Kafka Producer added.\n");
 
-	controller.add_consumer(brokers, "test", "test_group", 1);
+	controller.add_consumer(brokers, { "test" }, "test_group", 1);
 	printf("Kafka Consumer added.\n");
 
 	// Logic.
@@ -77,8 +77,8 @@ int main()
 
 	//while (true)
 	{
-		// Sleep for 5 seconds.
-		std::this_thread::sleep_for(std::chrono::seconds(5));
+		// Sleep.
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		// Receive a message from the Kafka Consumer.
 		std::shared_ptr<Kafka::Packet> message = controller.receive();
