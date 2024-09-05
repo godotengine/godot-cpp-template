@@ -1,0 +1,30 @@
+[configuration]
+
+entry_symbol = "library_init"
+compatibility_minimum = "4.1"
+reloadable = true
+
+[libraries]
+
+macos.debug = "bin/macos/libGodotKafka.framework"
+macos.release = "bin/macos/libGodotKafka.framework"
+
+ios.debug = "bin/ios/libGodotKafka.framework"
+ios.release = "bin/ios/libGodotKafka.framework"
+
+windows.debug.x86_32 = "bin/windows/libGodotKafka.dll"
+windows.debug.x86_64 = "bin/windows/libGodotKafka.dll"
+windows.release.x86_32 = "bin/windows/libGodotKafka.dll"
+windows.release.x86_64 = "bin/windows/libGodotKafka.dll"
+
+linux.debug.x86_64 = "bin/linux/libGodotKafka.so"
+linux.debug.arm64 = "bin/linux/libGodotKafka.so"
+linux.debug.rv64 = "bin/linux/libGodotKafka.so"
+linux.release.x86_64 = "bin/linux/libGodotKafka.so"
+linux.release.arm64 = "bin/linux/libGodotKafka.so"
+linux.release.rv64 = "bin/linux/libGodotKafka.so"
+
+android.debug.x86_64 = "bin/android/libGodotKafka.so"
+android.debug.arm64 = "bin/android/libGodotKafka.so"
+android.release.x86_64 = "bin/android/libGodotKafka.so"
+android.release.arm64 = "bin/android/libGodotKafka.so"

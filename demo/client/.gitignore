@@ -2,20 +2,20 @@
 .godot/
 
 # Ignore library files but not the gdextension file
-bin/*
-!bin/android
-bin/android/*
-!bin/android/.gitkeep
-!bin/linux
-bin/linux/*
-!bin/linux/.gitkeep
-!bin/macos
-bin/macos/*
-!bin/macos/.gitkeep
-!bin/windows
-bin/windows/*
-!bin/windows/.gitkeep
-!bin/*.gdextension
+addons/gdkafka/bin/*
+!addons/gdkafka/bin/android
+addons/gdkafka/bin/android/*
+!addons/gdkafka/bin/android/.gitkeep
+!addons/gdkafka/bin/linux
+addons/gdkafka/bin/linux/*
+!addons/gdkafka/bin/linux/.gitkeep
+!addons/gdkafka/bin/macos
+addons/gdkafka/bin/macos/*
+!addons/gdkafka/bin/macos/.gitkeep
+!addons/gdkafka/bin/windows
+addons/gdkafka/bin/windows/*
+!addons/gdkafka/bin/windows/.gitkeep
+!addons/gdkafka/bin/*.gdextension
 
 # Ignore custom.py
 custom.py
