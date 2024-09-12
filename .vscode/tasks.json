@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		// {
+		// 	"label": "CMake: configure",
+		// 	"type": "shell",
+		// 	"command": "cmake -DCMAKE_BUILD_TYPE=Debug ../..",
+		// 	"options": {
+		// 		"cwd": "${workspaceFolder}/.sln/Debug"
+		// 	},
+		// },
+		{
+			// "dependsOn": "CMake: configure",
+			"label": "CMake: build",
+			"type": "shell",
+			"command": "cmake --build .",
+			"options": {
+				"cwd": "${workspaceFolder}/.sln/Debug"
+			},
+		}
+	]
+}

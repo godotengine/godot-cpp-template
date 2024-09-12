@@ -14,6 +14,8 @@ void initialize_gdextension_types(godot::ModuleInitializationLevel p_level) {
 
 	// Register the class
 	GDREGISTER_CLASS(KafkaMultiplayerPeer);
+	GDREGISTER_CLASS(KafkaSubscriberMetadata);
+	GDREGISTER_CLASS(KafkaPublisherMetadata);
 }
 
 void uninitialize_gdextension_types(godot::ModuleInitializationLevel p_level) {

@@ -108,7 +108,13 @@ static RdKafka::Producer *create_producer(const std::string &brokers, std::strin
 	return producer;
 }
 
-static RdKafka::KafkaConsumer *create_consumer(const std::string &brokers, const std::string &group_id, std::string &errstr, Kafka::KafkaController::InternalRebalanceCb &rebalance_cb, Kafka::KafkaController::InternalLogger &loggerCb, const LogLevel logLevel) {
+static std::string generate_group_id() {
+	std::string group_id = "kafka-";
+	group_id += std::to_string(std::chrono::system_clock::now().time_since_epoch().count());
+	return group_id;
+}
+
+static RdKafka::KafkaConsumer *create_consumer(const KafkaConsumerMetadata &metadata, std::string &errstr, Kafka::KafkaController::InternalRebalanceCb &rebalance_cb, Kafka::KafkaController::InternalLogger &loggerCb, const LogLevel logLevel) {
 	RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
 
 	// Setup Logging.
@@ -121,11 +127,13 @@ static RdKafka::KafkaConsumer *create_consumer(const std::string &brokers, const
 	}
 
 	// Setup the brokers and group id.
-	if (conf->set("bootstrap.servers", brokers, errstr) != RdKafka::Conf::CONF_OK) {
+	if (conf->set("bootstrap.servers", metadata.brokers, errstr) != RdKafka::Conf::CONF_OK) {
 		return nullptr;
 	}
 
-	if (conf->set("group.id", group_id, errstr) != RdKafka::Conf::CONF_OK) {
+	// Set the group id.
+	std::string group_id_str = metadata.group_id.has_value() ? metadata.group_id.value() : generate_group_id();
+	if (conf->set("group.id", group_id_str, errstr) != RdKafka::Conf::CONF_OK) {
 		return nullptr;
 	}
 
@@ -135,7 +143,7 @@ static RdKafka::KafkaConsumer *create_consumer(const std::string &brokers, const
 	}
 
 	// Set the auto offset reset to earliest.
-	if (conf->set("auto.offset.reset", "earliest", errstr) != RdKafka::Conf::CONF_OK) {
+	if (conf->set("auto.offset.reset", ConsumerOffsetResetToString(metadata.offset_reset), errstr) != RdKafka::Conf::CONF_OK) {
 		return nullptr;
 	}
 
@@ -179,8 +187,7 @@ Kafka::KafkaController::~KafkaController()
 	clear();
 }
 
-void Kafka::KafkaController::add_producer(const std::string &brokers, const std::string &topic, const uint32_t channel)
-{
+void Kafka::KafkaController::add_producer(const KafkaProducerMetadata &metadata, const uint32_t channel) {
 	std::string errstr;
 
 	// Reuse existing callbacks, if the producer already exists; otherwise create new objects.
@@ -198,12 +205,12 @@ void Kafka::KafkaController::add_producer(const std::string &brokers, const std:
 		loggerCb			= std::make_shared<InternalLogger>();
 	}
 
-	RdKafka::Producer *producer = create_producer(brokers, errstr, *deliveryReportCb, *loggerCb, m_log_level);
+	RdKafka::Producer *producer = create_producer(metadata.brokers, errstr, *deliveryReportCb, *loggerCb, m_log_level);
 
 	if (!producer) {
 		//std::cerr << "Failed to create producer: " << errstr << std::endl;
-		if (m_error_callback)
-			m_error_callback("Failed to create producer: " + errstr);
+		if (m_log_callback)
+			m_log_callback(LogLevel::EMERGENCY, "Failed to create producer: " + errstr);
 		return;
 	}
 
@@ -213,20 +220,22 @@ void Kafka::KafkaController::add_producer(const std::string &brokers, const std:
 
 		if (message.err())
 		{
-			if (m_error_callback)
-				m_error_callback("Message delivery failed: " + RdKafka::err2str(message.err()));
+			if (m_log_callback)
+				m_log_callback(LogLevel::ERROR, "Message delivery failed: " + RdKafka::err2str(message.err()));
 		} else {
 			if (m_log_callback && m_log_level >= LogLevel::DEBUG)
 				m_log_callback(LogLevel::DEBUG, "Message delivered to partition " + std::to_string(message.partition()) + " at offset " + std::to_string(message.offset()));
 		}
 	});
 	loggerCb->set_callback([this](const LogLevel logLevel, const std::string &message) {
-		if (m_log_callback)
+		if (m_log_callback && m_log_level >= logLevel)
 			m_log_callback(logLevel, message);
 	});
 
 	// Create topic handle
-	RdKafka::Topic *rd_topic = RdKafka::Topic::create(producer, topic, nullptr, errstr);
+	RdKafka::Topic *rd_topic = RdKafka::Topic::create(producer, metadata.topic, nullptr, errstr);
+	if (m_log_callback && m_log_level >= LogLevel::DEBUG)
+		m_log_callback(LogLevel::DEBUG, "Created topic: " + metadata.topic);
 
 	// Create shared objects.
 	std::shared_ptr<RdKafka::Producer> producer_shared(producer);
@@ -249,7 +258,7 @@ void Kafka::KafkaController::add_producer(const std::string &brokers, const std:
 	m_producers[channel].push_back(producerContext);
 }
 
-void Kafka::KafkaController::add_consumer(const std::string &brokers, const std::vector<std::string> &topics, const std::string &group_id, const uint32_t channel) {
+void Kafka::KafkaController::add_consumer(const KafkaConsumerMetadata &metadata, const uint32_t channel) {
 	std::string errstr;
 	std::shared_ptr<InternalRebalanceCb> rebalance_cb;
 	std::shared_ptr<InternalLogger> loggerCb;
@@ -266,11 +275,12 @@ void Kafka::KafkaController::add_consumer(const std::string &brokers, const std:
 		loggerCb = std::make_shared<InternalLogger>();
 	}
 
-	RdKafka::KafkaConsumer *consumer = create_consumer(brokers, group_id, errstr, *rebalance_cb, *loggerCb, m_log_level);
+	// Create the consumer.
+	RdKafka::KafkaConsumer *consumer = create_consumer(metadata, errstr, *rebalance_cb, *loggerCb, m_log_level);
 
 	if (!consumer) {
-		if (m_error_callback)
-			m_error_callback("Failed to create consumer: " + errstr);
+		if (m_log_callback)
+			m_log_callback(LogLevel::EMERGENCY, "Failed to create consumer: " + errstr);
 		return;
 	}
 
@@ -284,8 +294,8 @@ void Kafka::KafkaController::add_consumer(const std::string &brokers, const std:
 
 		if (err != RdKafka::ERR_NO_ERROR)
 		{
-			if (m_error_callback)
-				m_error_callback("Rebalance callback: " + RdKafka::err2str(err));
+			if (m_log_callback)
+				m_log_callback(LogLevel::ERROR, "Rebalance callback: " + RdKafka::err2str(err));
 		}
 	});
 	loggerCb->set_callback([this](const LogLevel logLevel, const std::string &message) {
@@ -294,7 +304,7 @@ void Kafka::KafkaController::add_consumer(const std::string &brokers, const std:
 	});
 
 	// Subscribe.
-	consumer->subscribe(topics);
+	consumer->subscribe(metadata.topics);
 
 	// Create shared objects.
 	std::shared_ptr<RdKafka::KafkaConsumer> consumer_shared(consumer);
@@ -380,8 +390,8 @@ bool Kafka::KafkaController::send(const uint32_t channel, const void *data, cons
 		producer->get_producer()->flush(MAX_TIMEOUT_MS);
 
 		if (err) {
-			if (m_error_callback)
-				m_error_callback("Failed to produce message: " + RdKafka::err2str(err));
+			if (m_log_callback)
+				m_log_callback(LogLevel::ERROR, "Failed to produce message: " + RdKafka::err2str(err));
 
 			return false;
 		}
@@ -450,9 +460,15 @@ void Kafka::KafkaController::set_log_callback(const std::function<void(const Log
 	m_log_callback = callback;
 }
 
-void Kafka::KafkaController::set_error_callback(const std::function<void(const std::string &message)> callback)
-{
-	m_error_callback = callback;
+const std::vector<uint32_t> Kafka::KafkaController::get_registered_consumer_channels() const {
+	std::vector<uint32_t> channels;
+
+	for (auto &consumer : m_consumers)
+	{
+		channels.push_back(consumer.first);
+	}
+
+	return channels;
 }
 
 /// ------------------------- Packet ------------------------- ///
@@ -476,6 +492,15 @@ uint32_t Kafka::Packet::get_size() const { return size; }
 Kafka::PacketNode::PacketNode(const PacketNode &other) {
 	packet = other.packet;
 	next = other.next.load();
+}
+
+Kafka::PacketNode::~PacketNode()
+{
+	// Cleanup next.
+	if (next.load())
+	{
+		delete next.load();
+	}
 }
 
 std::shared_ptr<Packet> Kafka::PacketNode::get_packet() const { return packet; }
@@ -616,6 +641,14 @@ void Kafka::KafkaController::ConsumerContext::_consumer_thread(const uint32_t ch
 	while (is_running())
 	{
 		std::vector<std::shared_ptr<Packet>> packets;
+
+		// Hold reference to the kafka consumers.
+		std::vector<std::shared_ptr<RdKafka::KafkaConsumer>> consumers;
+		for (auto &consumer : this->consumers)
+		{
+			consumers.push_back(consumer);
+		}
+
 		for (auto &consumer : consumers)
 		{
 			RdKafka::Message *message = consumer->consume(1000);

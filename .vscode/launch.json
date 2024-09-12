@@ -7,6 +7,39 @@
         {
             "type": "lldb",
             "request": "launch",
+            "preLaunchTask": "CMake: build",
+            "name": "Debug GodotKafka",
+            "program": "${workspaceFolder}/godot-editor/Godot_v4.3-stable_win64.exe",
+            "args": [
+                "--debug",
+                "--path",
+                "${workspaceFolder}/demo/client"
+            ],
+            "cwd": "${workspaceFolder}",
+        },
+        // {
+        //     "name": "Debug GodotKafka",
+        //     "type": "godot",
+        //     "request": "launch",
+        //     "project": "${workspaceFolder}/demo/client",
+        //     "scene": "main",
+        //     "editor_path": "${workspaceFolder}/godot-editor/Godot_v4.3-stable_win64.exe",
+        //     "profiling": false,
+        //     "single_threaded_scene": false,
+        //     "debug_avoidance": false,
+        //     "debug_navigation": false,
+        //     "debug_collisions": false,
+        //     "debug_paths": false,
+        //     "debug_stringnames": false,
+        //     "frame_delay": 0,
+        //     "time_scale": 1.0,
+        //     "disable_vsync": false,
+        //     "fixed_fps": 60,
+        //     "additional_options": ""
+        // },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug executable 'rust-example'",
             "cargo": {
                 "args": [

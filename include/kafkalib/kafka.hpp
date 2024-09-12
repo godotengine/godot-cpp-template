@@ -37,26 +37,30 @@ private:
 
 class PacketNode {
 public:
+	PacketNode() :
+			packet(nullptr), next(nullptr) {}
 	PacketNode(std::shared_ptr<Packet> packet) :
 			packet(packet), next(nullptr) {}
 
-	~PacketNode() {}
+	virtual ~PacketNode();
 
 	PacketNode(const PacketNode &other);
 
 	std::shared_ptr<Packet> get_packet() const;
 	PacketNode *get_next() const;
 	void set_next(PacketNode *node);
-private:
+
+protected:
 	std::shared_ptr<Packet> packet;
+private:
 	std::atomic<PacketNode *> next;
 };
 
 enum class LogLevel {
-	EMERG = 0,
+	EMERGENCY = 0,
 	ALERT = 1,
-	CRIT = 2,
-	ERR = 3,
+	CRITICAL = 2,
+	ERROR = 3,
 	WARNING = 4,
 	NOTICE = 5,
 	INFO = 6,
@@ -65,13 +69,13 @@ enum class LogLevel {
 
 static const std::string LogLevelToString(const LogLevel level) {
 	switch (level) {
-		case LogLevel::EMERG:
+		case LogLevel::EMERGENCY:
 			return "EMERGENCY";
 		case LogLevel::ALERT:
 			return "ALERT";
-		case LogLevel::CRIT:
+		case LogLevel::CRITICAL:
 			return "CRITICAL";
-		case LogLevel::ERR:
+		case LogLevel::ERROR:
 			return "ERROR";
 		case LogLevel::WARNING:
 			return "WARNING";
@@ -86,6 +90,45 @@ static const std::string LogLevelToString(const LogLevel level) {
 	}
 }
 
+enum ConsumerOffsetReset {
+	EARLIEST,
+	LATEST
+};
+
+static const std::string ConsumerOffsetResetToString(const ConsumerOffsetReset reset) {
+	switch (reset) {
+		case ConsumerOffsetReset::EARLIEST:
+			return "earliest";
+		case ConsumerOffsetReset::LATEST:
+			return "latest";
+		default:
+			return "latest";
+	}
+}
+static const ConsumerOffsetReset ConsumerOffsetResetFromString(const std::string &reset) {
+	if (reset == "earliest") {
+		return ConsumerOffsetReset::EARLIEST;
+	} else if (reset == "latest") {
+		return ConsumerOffsetReset::LATEST;
+	} else {
+		return ConsumerOffsetReset::LATEST;
+	}
+}
+struct KafkaConsumerMetadata {
+public:
+	std::string brokers;
+	std::vector<std::string> topics;
+
+	std::optional<std::string> group_id;
+	ConsumerOffsetReset offset_reset = ConsumerOffsetReset::EARLIEST;
+};
+
+struct KafkaProducerMetadata {
+	public:
+	std::string brokers;
+	std::string topic;
+};
+
 class KafkaController {
 public:
 	KafkaController();
@@ -97,7 +140,7 @@ public:
 	/// <param name="brokers"></param>
 	/// <param name="topic"></param>
 	/// <param name="channel"></param>
-	void add_producer(const std::string &brokers, const std::string &topic, const uint32_t channel);
+	void add_producer(const KafkaProducerMetadata &metadata, const uint32_t channel = 0);
 	/// <summary>
 	/// Creates a consumer and tracks it internally.
 	/// </summary>
@@ -105,7 +148,7 @@ public:
 	/// <param name="topic"></param>
 	/// <param name="group_id"></param>
 	/// <param name="channel"></param>
-	void add_consumer(const std::string &brokers, const std::vector<std::string> &topics, const std::string &group_id, const uint32_t channel);
+	void add_consumer(const KafkaConsumerMetadata &metadata, const uint32_t channel = 0);
 
 	/// <summary>
 	/// Clears all producers of a channel.
@@ -168,10 +211,10 @@ public:
 	void set_log_callback(const std::function<void(const LogLevel logLevel, const std::string &message)> callback);
 
 	/// <summary>
-	/// Set Error Callback.
+	/// Gets all the channel ids of registered consumers.
 	/// </summary>
-	/// <param name="callback"></param>
-	void set_error_callback(const std::function<void(const std::string &message)> callback);
+	/// <returns></returns>
+	const std::vector<uint32_t> get_registered_consumer_channels() const;
 
 	class InternalLogger;
 	class InternalRebalanceCb;
@@ -254,7 +297,6 @@ private:
 		std::shared_ptr<InternalRebalanceCb> rebalance_cb;
 	};
 
-	std::function<void(const std::string &message)> m_error_callback;
 	std::function<void(const LogLevel logLevel, const std::string &message)> m_log_callback;
 	LogLevel m_log_level = LogLevel::WARNING;
 

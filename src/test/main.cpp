@@ -7,8 +7,8 @@ static void log_callback(Kafka::LogLevel severity, const std::string &message)
 	std::string color;
 	switch (severity)
 	{
-		case Kafka::LogLevel::CRIT:
-		case Kafka::LogLevel::ERR:
+		case Kafka::LogLevel::CRITICAL:
+		case Kafka::LogLevel::ERROR:
 			color = "\033[1;31m";
 			break;
 		case Kafka::LogLevel::WARNING:
@@ -28,9 +28,15 @@ static void log_callback(Kafka::LogLevel severity, const std::string &message)
 	printf("%s[%s] %s\n\033[0m", color.c_str(), Kafka::LogLevelToString(severity).c_str(), message.c_str());
 }
 
-void on_error(const std::string &message)
+static void on_error(const std::string &message)
 {
 	printf("\033[1;31mError: %s\n\033[0m", message.c_str());
+}
+
+static bool is_number(const std::string &s)
+{
+	return !s.empty() && std::find_if(s.begin(),
+		s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
 }
 
 int main()
@@ -53,46 +59,84 @@ int main()
 	printf("Kafka Controller created.\n");
 
 	// Add a Kafka Producer and Consumer.
-	controller.add_producer(brokers, "test", 1);
-	printf("Kafka Producer added.\n");
-
-	controller.add_consumer(brokers, { "test" }, "test_group", 1);
-	printf("Kafka Consumer added.\n");
-
-	// Logic.
-	std::string msg = "Hello, World!";
-
-	// Send a message to the Kafka Producer.
-	if (controller.send(
-		1,
-		msg.c_str(),
-		msg.size()))
 	{
-		printf("Message sent.\n");
-	} else {
-		printf("Failed to send message.\n");
-		return EXIT_FAILURE;
+		Kafka::KafkaProducerMetadata producer_metadata;
+		producer_metadata.brokers = brokers;
+		producer_metadata.topic = "test";
+		controller.add_producer(producer_metadata, 1);
+		printf("Kafka Producer added.\n");
 	}
 
-
-	//while (true)
 	{
-		// Sleep.
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		Kafka::KafkaConsumerMetadata consumer_metadata;
+		consumer_metadata.brokers = brokers;
+		consumer_metadata.topics = { "test" };
+		controller.add_consumer(consumer_metadata, 1);
+		printf("Kafka Consumer added.\n");
+	}
 
+	// Logic.
+	
+
+	// Collect the delta time between each frame.
+	int count = 0;
+	double average = 0.0;
+
+	while (true)
+	{
+		if (count > 100)
+		{
+			printf("--------------------\n");
+			printf("Average: %fms\n", (average / count) * 1000);
+
+			// Sleep for 1 second.
+			std::this_thread::sleep_for(std::chrono::seconds(10));
+
+			// Reset the count and average.
+			count = 0;
+			average = 0.0;
+		}
+
+		std::chrono::time_point start_time = std::chrono::high_resolution_clock::now();
+		std::string msg = std::to_string(start_time.time_since_epoch().count());
+
+		// Send a message to the Kafka Producer.
+		controller.send(
+			1,
+			msg.c_str(),
+			msg.size()
+		);
 		// Receive a message from the Kafka Consumer.
 		std::shared_ptr<Kafka::Packet> message = controller.receive();
 
-		printf("Consumed.\n");
+		//printf("Consumed.\n");
+		count++;
 
 		if (message != nullptr)
 		{
-			printf("Message: %d bytes\n", message->get_size());
+			// Convert the message to a string.
+			std::string message_str = std::string((char *)(message->get_data()), message->get_size());
+
+			// Check if message is an integer.
+			if (!is_number(message_str))
+			{
+				printf("Message is not a number.\n");
+				continue;
+			}
+
+			long long int time = std::stoll(message_str);
+
+			std::chrono::time_point end_time = std::chrono::high_resolution_clock::now();
+
+			std::chrono::duration<double> delta_time = end_time - start_time;
+
+			double delta = delta_time.count();
+
+			average += delta;
+
+			printf("Delta Time: %fms\n", delta);
 		}
-		else
-		{
-			printf("No message.\n");
-		}
+
 	}
 
 	return EXIT_SUCCESS;

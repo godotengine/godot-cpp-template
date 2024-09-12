@@ -6,3 +6,23 @@
 
 [node name="NetworkManager" type="Node" parent="."]
 script = ExtResource("1_jbx0p")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -47.5
+offset_right = 47.5
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Hello World!"
+horizontal_alignment = 1
