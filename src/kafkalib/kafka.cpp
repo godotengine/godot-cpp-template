@@ -207,9 +207,10 @@ void Kafka::KafkaController::add_producer(const KafkaProducerMetadata &metadata,
 
 	RdKafka::Producer *producer = create_producer(metadata.brokers, errstr, *deliveryReportCb, *loggerCb, m_log_level);
 
-	if (!producer) {
+	if (!producer)
+	{
 		//std::cerr << "Failed to create producer: " << errstr << std::endl;
-		if (m_log_callback)
+		if (m_log_callback && m_log_level <= LogLevel::EMERGENCY)
 			m_log_callback(LogLevel::EMERGENCY, "Failed to create producer: " + errstr);
 		return;
 	}
@@ -220,22 +221,28 @@ void Kafka::KafkaController::add_producer(const KafkaProducerMetadata &metadata,
 
 		if (message.err())
 		{
-			if (m_log_callback)
+			if (m_log_callback && m_log_level <= LogLevel::ERROR)
 				m_log_callback(LogLevel::ERROR, "Message delivery failed: " + RdKafka::err2str(message.err()));
 		} else {
-			if (m_log_callback && m_log_level >= LogLevel::DEBUG)
+			if (m_log_callback && m_log_level <= LogLevel::DEBUG)
 				m_log_callback(LogLevel::DEBUG, "Message delivered to partition " + std::to_string(message.partition()) + " at offset " + std::to_string(message.offset()));
 		}
 	});
 	loggerCb->set_callback([this](const LogLevel logLevel, const std::string &message) {
-		if (m_log_callback && m_log_level >= logLevel)
+		if (m_log_callback && m_log_level <= logLevel)
 			m_log_callback(logLevel, message);
 	});
 
 	// Create topic handle
 	RdKafka::Topic *rd_topic = RdKafka::Topic::create(producer, metadata.topic, nullptr, errstr);
-	if (m_log_callback && m_log_level >= LogLevel::DEBUG)
+	if (!rd_topic) {
+		if (m_log_callback && m_log_level <= LogLevel::EMERGENCY)
+			m_log_callback(LogLevel::EMERGENCY, "Failed to create topic: " + errstr);
+		return;
+	}
+	if (m_log_callback && m_log_level <= LogLevel::DEBUG)
 		m_log_callback(LogLevel::DEBUG, "Created topic: " + metadata.topic);
+
 
 	// Create shared objects.
 	std::shared_ptr<RdKafka::Producer> producer_shared(producer);
@@ -248,6 +255,12 @@ void Kafka::KafkaController::add_producer(const KafkaProducerMetadata &metadata,
 		loggerCb,
 		deliveryReportCb
 	);
+	if (!producerContext)
+	{
+		if (m_log_callback && m_log_level <= LogLevel::EMERGENCY)
+			m_log_callback(LogLevel::EMERGENCY, "Failed to create producer context.");
+		return;
+	}
 
 	// Create a vector, if it doesn't exist.
 	if (m_producers.find(channel) == m_producers.end()) {
@@ -277,9 +290,9 @@ void Kafka::KafkaController::add_consumer(const KafkaConsumerMetadata &metadata,
 
 	// Create the consumer.
 	RdKafka::KafkaConsumer *consumer = create_consumer(metadata, errstr, *rebalance_cb, *loggerCb, m_log_level);
-
-	if (!consumer) {
-		if (m_log_callback)
+	if (!consumer)
+	{
+		if (m_log_callback && m_log_level <= LogLevel::EMERGENCY)
 			m_log_callback(LogLevel::EMERGENCY, "Failed to create consumer: " + errstr);
 		return;
 	}
@@ -294,23 +307,42 @@ void Kafka::KafkaController::add_consumer(const KafkaConsumerMetadata &metadata,
 
 		if (err != RdKafka::ERR_NO_ERROR)
 		{
-			if (m_log_callback)
+			if (m_log_callback && m_log_level <= LogLevel::ERROR)
 				m_log_callback(LogLevel::ERROR, "Rebalance callback: " + RdKafka::err2str(err));
 		}
 	});
 	loggerCb->set_callback([this](const LogLevel logLevel, const std::string &message) {
-		if (m_log_callback)
+		if (m_log_callback && m_log_level <= logLevel)
 			m_log_callback(logLevel, message);
 	});
 
 	// Subscribe.
-	consumer->subscribe(metadata.topics);
+	if (consumer->subscribe(metadata.topics) != RdKafka::ERR_NO_ERROR) {
+		if (m_log_callback && m_log_level <= LogLevel::EMERGENCY)
+			m_log_callback(LogLevel::EMERGENCY, "Failed to subscribe to topics.");
+		return;
+	}
 
 	// Create shared objects.
 	std::shared_ptr<RdKafka::KafkaConsumer> consumer_shared(consumer);
+	if (!consumer_shared) {
+		if (m_log_callback && m_log_level <= LogLevel::EMERGENCY)
+			m_log_callback(LogLevel::EMERGENCY, "Failed to create consumer shared.");
+		return;
+	}
 	std::shared_ptr<InternalLogger> loggerCb_shared(loggerCb);
+	if (!loggerCb_shared) {
+		if (m_log_callback && m_log_level <= LogLevel::EMERGENCY)
+			m_log_callback(LogLevel::EMERGENCY, "Failed to create loggerCb shared.");
+		return;
+	}
 	std::shared_ptr<InternalRebalanceCb> rebalance_cb_shared(rebalance_cb);
-
+	if (!rebalance_cb_shared) {
+		if (m_log_callback && m_log_level <= LogLevel::EMERGENCY)
+			m_log_callback(LogLevel::EMERGENCY, "Failed to create rebalance_cb shared.");
+		return;
+	}
+	
 	// Create Context, if it doesn't exist.
 	if (m_consumers.find(channel) == m_consumers.end())
 	{
@@ -390,7 +422,7 @@ bool Kafka::KafkaController::send(const uint32_t channel, const void *data, cons
 		producer->get_producer()->flush(MAX_TIMEOUT_MS);
 
 		if (err) {
-			if (m_log_callback)
+			if (m_log_callback && m_log_level <= LogLevel::ERROR)
 				m_log_callback(LogLevel::ERROR, "Failed to produce message: " + RdKafka::err2str(err));
 
 			return false;

@@ -39,7 +39,7 @@ void KafkaMultiplayerPeer::_bind_methods()
 KafkaMultiplayerPeer::KafkaMultiplayerPeer()
 {
 	#if DEBUG_ENABLED || DEBUG
-	kafka_controller.set_log_level(Kafka::LogLevel::EMERGENCY);
+	kafka_controller.set_log_level(Kafka::LogLevel::DEBUG);
 	#else
 	kafka_controller.set_log_level(Kafka::LogLevel::INFO);
 	#endif
