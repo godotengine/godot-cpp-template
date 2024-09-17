@@ -77,18 +77,19 @@ if env["target"] in ["editor", "template_debug"]:
         print("Not including class reference as we're targeting a pre-4.3 baseline.")
 
 file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
+filepath = ""
 
 if env["platform"] == "macos" or env["platform"] == "ios":
-    platlibname = "{}.{}.{}".format(libname, env["platform"], env["target"])
-    file = "{}.framework/{}".format(env["platform"], platlibname, platlibname)
+    filepath = "{}.framework/".format(env["platform"])
+    file = "{}.{}.{}".format(libname, env["platform"], env["target"])
 
-libraryfile = "bin/{}/{}".format(env["platform"], file)
+libraryfile = "bin/{}/{}{}".format(env["platform"], filepath, file)
 library = env.SharedLibrary(
     libraryfile,
     source=sources,
 )
 
-copy = env.InstallAs("{}/bin/{}/lib{}".format(projectdir, env["platform"], file), library)
+copy = env.InstallAs("{}/bin/{}/{}lib{}".format(projectdir, env["platform"], filepath, file), library)
 
 default_args = [library, copy]
 if localEnv.get("compiledb", False):
