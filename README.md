@@ -112,9 +112,19 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: GDExtension
+          name: GDExtension-${{ matrix.platform }}-${{ matrix.arch }}
           path: |
             ${{ github.workspace }}/bin/**
+  merge:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: GDExtension-all
+          pattern: GDExtension-*
+          delete-merged: true
 ```
 
 The above example is a lengthy one, so we will go through it action by action to see what is going on.
@@ -131,7 +141,7 @@ with:
 ```
 with the parameters from the matrix.
 
-As a result of this step, the binaries will be built in the `bin` folder (as specified in the SConstruct file).
+As a result of this step, the binaries will be built in the `bin` folder (as specified in the SConstruct file). After all builds are completed, all individual builds will be merged into one common GDExtension-all zip that you can download.
 
 Note: for macos, you will have to build the binary as a `.dylib` in a `EXTENSION-NAME.framework` folder. The framework folder should also have a `Resources` folder with a file called `Info.plist`. Without this file, signing will fail.
 
