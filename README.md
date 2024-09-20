@@ -102,7 +102,7 @@ jobs:
           APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
         uses: godotengine/godot-cpp-template/.github/actions/sign@main
         with:
-          FRAMEWORK_PATH: bin/macos/macos.framework
+          FRAMEWORK_PATH: build/addons/gdexample/macos/gdexample-macos.framework
           APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
           APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
           APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}
@@ -114,7 +114,7 @@ jobs:
         with:
           name: GDExtension-${{ matrix.platform }}-${{ matrix.arch }}
           path: |
-            ${{ github.workspace }}/bin/**
+            ${{ github.workspace }}/build/**
   merge:
     runs-on: ubuntu-latest
     needs: build
