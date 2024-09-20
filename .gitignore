@@ -22,7 +22,8 @@ demo/bin/windows/*
 custom.py
 
 # Ignore generated compile_commands.json
-compile_commands.json
+/compile_commands.json
+/src/gen
 
 # Binaries
 *.o
@@ -49,3 +50,8 @@ compile_commands.json
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+
+# Build binaries
+/build/addons/numdot/**/*
+!/build/addons/numdot/**/
+!/build/addons/numdot/**/*.plist
