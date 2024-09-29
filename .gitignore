@@ -24,6 +24,9 @@ custom.py
 # Ignore generated compile_commands.json
 compile_commands.json
 
+# Ignore files generated for documentation
+/src/gen
+
 # Binaries
 *.o
 *.os
