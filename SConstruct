@@ -76,20 +76,20 @@ if env["target"] in ["editor", "template_debug"]:
     except AttributeError:
         print("Not including class reference as we're targeting a pre-4.3 baseline.")
 
-file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
-filepath = ""
+lib_filename = "{}{}{}{}".format(env.subst("$SHLIBPREFIX"), libname, env["suffix"], env.subst("$SHLIBSUFFIX"))
+lib_filepath = ""
 
 if env["platform"] == "macos" or env["platform"] == "ios":
-    filepath = "{}.framework/".format(env["platform"])
-    file = "{}.{}.{}".format(libname, env["platform"], env["target"])
+    # For signing, the dylibs need to be in a folder, along with the plist files.
+     lib_filepath = "{}-{}.framework/".format(libname, env["platform"])
 
-libraryfile = "bin/{}/{}{}".format(env["platform"], filepath, file)
+libraryfile = "bin/{}/{}{}".format(env["platform"], lib_filepath, lib_filename)
 library = env.SharedLibrary(
     libraryfile,
     source=sources,
 )
 
-copy = env.InstallAs("{}/bin/{}/{}lib{}".format(projectdir, env["platform"], filepath, file), library)
+copy = env.Install("{}/bin/{}/{}".format(projectdir, env["platform"], lib_filepath), library),
 
 default_args = [library, copy]
 if localEnv.get("compiledb", False):

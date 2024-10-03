@@ -102,7 +102,7 @@ jobs:
           APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
         uses: godotengine/godot-cpp-template/.github/actions/sign@main
         with:
-          FRAMEWORK_PATH: bin/macos/macos.framework
+          FRAMEWORK_PATH: bin/macos/EXTENSION-NAME-macos.framework
           APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
           APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
           APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}

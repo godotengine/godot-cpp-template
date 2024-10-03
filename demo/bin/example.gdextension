@@ -5,12 +5,12 @@ compatibility_minimum = "4.1"
 
 [libraries]
 
-macos.debug = "res://bin/macos/macos.framework/libEXTENSION-NAME.macos.template_debug"
-macos.release = "res://bin/macos/macos.framework/libEXTENSION-NAME.macos.template_release"
-ios.debug = "res://bin/ios/ios.framework/libEXTENSION-NAME.ios.template_debug"
-ios.release = "res://bin/ios/ios.framework/libEXTENSION-NAME.ios.template_release"
-windows.debug.x86_32 = "res://bin/windows/libEXTENSION-NAME.windows.template_debug.x86_32.dll"
-windows.release.x86_32 = "res://bin/windows/libEXTENSION-NAME.windows.template_release.x86_32.dll"
+macos.debug = "res://bin/macos/EXTENSION-NAME-macos.framework/libEXTENSION-NAME.macos.template_debug.universal.dylib"
+macos.release = "res://bin/macos/EXTENSION-NAME-macos.framework/libEXTENSION-NAME.macos.template_release.universal.dylib"
+ios.debug = "res://bin/ios/ios.framework/libEXTENSION-NAME.ios.template_debug.universal.dylib"
+ios.release = "res://bin/ios/ios.framework/libEXTENSION-NAME.ios.template_release.universal.dylib"
+windows.debug.x86_32 = "res://bin/windows/EXTENSION-NAME.windows.template_debug.x86_32.dll"
+windows.release.x86_32 = "res://bin/windows/EXTENSION-NAME.windows.template_release.x86_32.dll"
 windows.debug.x86_64 = "res://bin/windows/libEXTENSION-NAME.windows.template_debug.x86_64.dll"
 windows.release.x86_64 = "res://bin/windows/libEXTENSION-NAME.windows.template_release.x86_64.dll"
 linux.debug.x86_64 = "res://bin/linux/libEXTENSION-NAME.linux.template_debug.x86_64.so"
