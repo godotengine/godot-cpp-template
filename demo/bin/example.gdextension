@@ -5,10 +5,10 @@ compatibility_minimum = "4.1"
 
 [libraries]
 
-macos.debug = "res://bin/macos/EXTENSION-NAME.framework"
-macos.release = "res://bin/macos/EXTENSION-NAME.framework"
-ios.debug = "res://bin/ios/EXTENSION-NAME.framework"
-ios.release = "res://bin/ios/EXTENSION-NAME.framework"
+macos.debug = "res://bin/macos/EXTENSION-NAME.macos.template_debug.universal.framework"
+macos.release = "res://bin/macos/EXTENSION-NAME.macos.template_release.universal.framework"
+ios.debug = "res://bin/ios/EXTENSION-NAME.ios.template_debug.universal.framework"
+ios.release = "res://bin/ios/EXTENSION-NAME.ios.template_release.universal.framework"
 windows.debug.x86_32 = "res://bin/windows/EXTENSION-NAME.windows.template_debug.x86_32.dll"
 windows.release.x86_32 = "res://bin/windows/EXTENSION-NAME.windows.template_release.x86_32.dll"
 windows.debug.x86_64 = "res://bin/windows/libEXTENSION-NAME.windows.template_debug.x86_64.dll"
