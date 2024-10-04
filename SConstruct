@@ -80,8 +80,17 @@ lib_filename = "{}{}{}{}".format(env.subst("$SHLIBPREFIX"), libname, env["suffix
 lib_filepath = ""
 
 if env["platform"] == "macos" or env["platform"] == "ios":
-    # For signing, the dylibs need to be in a folder, along with the plist files.
-     lib_filepath = "{}-{}.framework/".format(libname, env["platform"])
+    # By default, the above code generates .dylib files on macOS and iOS.
+    # The App Store rejects entries containing .dylib files, requiring a .framework structure instead.
+    # Details about the .framework structure are described Framework Programming Guide:
+    # https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html#//apple_ref/doc/uid/20002253-BAJEJJAB
+    framework_name = "{}{}".format(libname, env["suffix"])
+    lib_filename = framework_name
+    lib_filepath = "{}.framework/".format(framework_name)
+
+    # Prevents the binary from getting a prefix / suffix automatically
+    env["SHLIBPREFIX"] = ""
+    env["SHLIBSUFFIX"] = ""
 
 libraryfile = "bin/{}/{}{}".format(env["platform"], lib_filepath, lib_filename)
 library = env.SharedLibrary(
