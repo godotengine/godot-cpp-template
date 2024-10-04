@@ -98,7 +98,7 @@ library = env.SharedLibrary(
     source=sources,
 )
 
-copy = env.Install("{}/bin/{}/{}".format(projectdir, env["platform"], lib_filepath), library),
+copy = env.Install("{}/bin/{}/{}".format(projectdir, env["platform"], lib_filepath), library)
 
 default_args = [library, copy]
 if localEnv.get("compiledb", False):
