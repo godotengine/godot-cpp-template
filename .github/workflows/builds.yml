@@ -291,7 +291,7 @@ jobs:
           APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
         uses: ./.github/actions/sign
         with:
-          FRAMEWORK_PATH: bin/macos/EXTENSION-NAME-macos.framework
+          FRAMEWORK_PATH: bin/macos/EXTENSION-NAME.macos.template_release.universal.framework
           APPLE_CERT_BASE64: ${{ secrets.APPLE_CERT_BASE64 }}
           APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
           APPLE_DEV_PASSWORD: ${{ secrets.APPLE_DEV_PASSWORD }}
