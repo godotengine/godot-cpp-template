@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
-	<string>EXTENSION-NAME.macos.template_release.universal</string>
+	<string>EXTENSION-NAME.ios.template_release.arm64</string>
 	<key>CFBundleName</key>
 	<string>Godot Template Cpp</string>
 	<key>CFBundleDisplayName</key>
