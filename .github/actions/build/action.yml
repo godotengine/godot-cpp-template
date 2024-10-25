@@ -18,7 +18,7 @@ inputs:
     default: .scons-cache/
     description: Scons cache location.
   em_version:
-    default: 3.1.39
+    default: 3.1.62
     description: Emscripten version.
   em_cache_folder:
     default: emsdk-cache
