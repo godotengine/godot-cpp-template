@@ -76,20 +76,29 @@ if env["target"] in ["editor", "template_debug"]:
     except AttributeError:
         print("Not including class reference as we're targeting a pre-4.3 baseline.")
 
-file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
-filepath = ""
+lib_filename = "{}{}{}{}".format(env.subst("$SHLIBPREFIX"), libname, env["suffix"], env.subst("$SHLIBSUFFIX"))
+lib_filepath = ""
 
 if env["platform"] == "macos" or env["platform"] == "ios":
-    filepath = "{}.framework/".format(env["platform"])
-    file = "{}.{}.{}".format(libname, env["platform"], env["target"])
+    # By default, the above code generates .dylib files on macOS and iOS.
+    # The App Store rejects entries containing .dylib files, requiring a .framework structure instead.
+    # Details about the .framework structure are described Framework Programming Guide:
+    # https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/FrameworkAnatomy.html#//apple_ref/doc/uid/20002253-BAJEJJAB
+    framework_name = "{}{}".format(libname, env["suffix"])
+    lib_filename = framework_name
+    lib_filepath = "{}.framework/".format(framework_name)
 
-libraryfile = "bin/{}/{}{}".format(env["platform"], filepath, file)
+    # Prevents the binary from getting a prefix / suffix automatically
+    env["SHLIBPREFIX"] = ""
+    env["SHLIBSUFFIX"] = ""
+
+libraryfile = "bin/{}/{}{}".format(env["platform"], lib_filepath, lib_filename)
 library = env.SharedLibrary(
     libraryfile,
     source=sources,
 )
 
-copy = env.InstallAs("{}/bin/{}/{}lib{}".format(projectdir, env["platform"], filepath, file), library)
+copy = env.Install("{}/bin/{}/{}".format(projectdir, env["platform"], lib_filepath), library)
 
 default_args = [library, copy]
 if localEnv.get("compiledb", False):
