@@ -81,7 +81,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: true
-          fetch-depth: 0
       - name: 🔗 GDExtension Build
         uses: godotengine/godot-cpp-template/.github/actions/build@main
         with:
