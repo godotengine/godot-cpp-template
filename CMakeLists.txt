@@ -20,19 +20,21 @@ target_sources( ${PROJECT_NAME}
         src/register_types.h
 )
 
-target_link_libraries( ${PROJECT_NAME} PRIVATE godot-cpp )
+target_link_libraries( ${PROJECT_NAME} PRIVATE godot-cpp::editor )
 
-set( ARCH_NAME_AMD64 x86_64 )
+get_target_property( GODOT_PLATFORM godot-cpp::editor GODOT_PLATFORM )
+get_target_property( GODOT_TARGET godot-cpp::editor GODOT_TARGET )
+get_target_property( GODOT_ARCH godot-cpp::editor GODOT_ARCH )
+#get_target_property( GODOT_DEV godot-cpp::editor GODOT_DEV )
+#get_target_property( GODOT_DOUBLE godot-cpp::editor GODOT_DOUBLE )
 
-set( PLATFORM_NAME "$<LOWER_CASE:$<PLATFORM_ID>>")
-set( TARGET_NAME "$<LOWER_CASE:$<CONFIG>>")
-set( DOUBLE "$<$<STREQUAL:${FLOAT_PRECISION},double>:.double>")
-set( ARCH_NAME ${ARCH_NAME_${CMAKE_SYSTEM_PROCESSOR}})
+#set( DEV ".${GODOT_DEV}" )
+#set( DOUBLE ".${GODOT_DOUBLE}" )
 
 set_target_properties( ${PROJECT_NAME}
         PROPERTIES
         #The generator expression here prevents a subdir from being created.
-        RUNTIME_OUTPUT_DIRECTORY "$<$<BOOL:1>:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}>"
-        # godot.<platform>.<target>[.dev][.double].<arch>[.custom_suffix][.console].exe
-        OUTPUT_NAME "${PROJECT_NAME}.${PLATFORM_NAME}.${TARGET_NAME}${DOUBLE}.${ARCH_NAME}"
+        RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_RUNTIME_OUTPUT_DIRECTORY}>"
+        # name format project.<platform>.<target>[.dev][.double].<arch>[.custom_suffix]
+        OUTPUT_NAME "${PROJECT_NAME}.${GODOT_PLATFORM}.${GODOT_TARGET}${DEV}${DOUBLE}.${GODOT_ARCH}"
 )
