@@ -86,15 +86,8 @@ jobs:
         with:
           platform: ${{ matrix.platform }}
           arch: ${{ matrix.arch }}
-          float-precision: single
-          build-target-type: template_release
-      - name: 🔗 GDExtension Build
-        uses: ./.github/actions/build
-        with:
-          platform: ${{ matrix.platform }}
-          arch: ${{ matrix.arch }}
-          float-precision: ${{ matrix.float-precision }}
-          build-target-type: template_debug
+          scons-arguments: target=template_release
+          cache-key: .template_release
       - name: Mac Sign
         if: ${{ matrix.platform == 'macos' && env.APPLE_CERT_BASE64 }}
         env:
@@ -135,8 +128,8 @@ uses: godotengine/godot-cpp-template/.github/actions/build@main
 with:
   platform: ${{ matrix.platform }}
   arch: ${{ matrix.arch }}
-  float-precision: single
-  build-target-type: template_release
+  scons-arguments: target=template_release
+  cache-key: .template_release
 ```
 with the parameters from the matrix.
 

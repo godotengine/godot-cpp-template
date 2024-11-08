@@ -8,12 +8,20 @@ inputs:
   arch:
     required: true
     description: Target architecture.
+  scons-arguments:
+    default: ''
+    description: Additional space-separated arguments to pass to the scons build command.
+  cache-key:
+    default: ''
+    description: Key to use for caches. This input is used in paths and should not contain POSIX incompatible characters.
   float-precision:
-    default: 'single'
     description: Float precision (single or double).
+    required: false
+    deprecationMessage: Use the scons-arguments (and cache-key) parameters instead. This parameter will continue to work until removed.
   build-target-type:
-    default: 'template_debug'
+    required: false
     description: Build type (template_debug or template_release).
+    deprecationMessage: Use the scons-arguments (and cache-key) parameters instead. This parameter will continue to work until removed.
   scons-cache:
     default: '.scons-cache/'
     description: Scons cache folder name, relative to each scons directory. Must not contain relative path signifiers (. or ..). Must be a transparent path part (empty or 'path/to/directory/', ending in a slash).
@@ -70,7 +78,7 @@ runs:
       uses: mymindstorm/setup-emsdk@v13
       with:
         version: ${{ inputs.em_version }}
-        actions-cache-folder: ${{ inputs.em-cache-directory }}.${{ inputs.float-precision }}.${{ inputs.build-target-type }}
+        actions-cache-folder: ${{ inputs.em-cache-directory }}.${{ inputs.float-precision }}.${{ inputs.build-target-type }}${{ inputs.cache-key }}
     - name: Web - Verify Emscripten setup
       if: ${{ inputs.platform == 'web' }}
       shell: sh
@@ -103,12 +111,12 @@ runs:
       with:
         path: |
           ${{ github.workspace }}/${{ inputs.gdextension-directory }}${{ inputs.scons-cache }}
-        key: ${{ inputs.platform }}_${{ inputs.arch }}_${{ inputs.float-precision }}_${{ inputs.build-target-type }}_cache
+        key: ${{ inputs.platform }}_${{ inputs.arch }}_${{ inputs.float-precision }}_${{ inputs.build-target-type }}${{ inputs.cache-key }}_cache
 # Build gdextension
     - name: Build GDExtension Debug Build
       shell: sh
       env:
         SCONS_CACHE: ${{ github.workspace }}/${{ inputs.gdextension-directory }}${{ inputs.scons-cache }}
       run: |
-        scons target=${{ inputs.build-target-type }} platform=${{ inputs.platform }} arch=${{ inputs.arch }} precision=${{ inputs.float-precision }}
+        scons platform=${{ inputs.platform }} arch=${{ inputs.arch }} ${{ inputs.float-precision && 'precision=' || '' }}${{ inputs.float-precision }} ${{ inputs.build-target-type && 'target=' || '' }}${{ inputs.build-target-type }} ${{ inputs.scons-arguments }}
       working-directory: ${{ inputs.gdextension-directory }}
