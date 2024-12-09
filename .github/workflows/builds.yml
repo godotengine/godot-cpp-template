@@ -5,9 +5,6 @@ on:
   pull_request:
   merge_group:
 
-env:
-  LIBNAME: example
-
 jobs:
   build:
     strategy:
@@ -260,12 +257,13 @@ jobs:
           #   os: ubuntu-20.04
     runs-on: ${{ matrix.os }}
     steps:
+      # Clone this repository
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: true
 
-# Lint
+      # Lint
       #- name: Setup clang-format
       #  shell: bash
       #  run: |
@@ -275,16 +273,27 @@ jobs:
       #  run: |
       #    clang-format src/** --dry-run --Werror
 
-# Build
-      - name: 🔗 GDExtension Debug Build
-        uses: ./.github/actions/build
+      # Setup dependencies
+      - name: Setup godot-cpp
+        uses: ./godot-cpp/.github/actions/setup-godot-cpp
         with:
           platform: ${{ matrix.platform }}
-          arch: ${{ matrix.arch }}
-          float-precision: ${{ matrix.float-precision }}
-          build-target-type: ${{ matrix.target-type }}
+          em-version: 3.1.62
 
-# Sign
+      # Build GDExtension (with caches)
+      - name: Cache .scons_cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.scons-cache/
+          key: ${{ matrix.platform }}_${{ matrix.arch }}_${{ matrix.float-precision }}_${{ matrix.target-type }}_cache
+      - name: Build GDExtension Debug Build
+        shell: sh
+        env:
+          SCONS_CACHE: ${{ github.workspace }}/.scons-cache/
+        run: |
+          scons target=${{ matrix.target-type }} platform=${{ matrix.platform }} arch=${{ matrix.arch }} precision=${{ matrix.float-precision }}
+
+      # Sign the binary (macOS only)
       - name: Mac Sign
         # Disable sign if secrets are not set
         if: ${{ matrix.platform == 'macos' && env.APPLE_CERT_BASE64 }}
@@ -300,11 +309,14 @@ jobs:
           APPLE_DEV_TEAM_ID: ${{ secrets.APPLE_DEV_TEAM_ID }}
           APPLE_DEV_APP_ID: ${{ secrets.APPLE_DEV_APP_ID }}
 
+      # Clean up compilation files
       - name: Windows - Delete compilation files
         if: ${{ matrix.platform == 'windows' }}
         shell: pwsh
         run: |
           Remove-Item bin/* -Include *.exp,*.lib,*.pdb -Force
+
+      # Upload the build
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
