@@ -16,8 +16,8 @@ jobs:
         target:
           [
             { platform: linux, arch: x86_64, os: ubuntu-22.04 },
-            { platform: windows, arch: x86_64, os: windows-latest },
-            { platform: windows, arch: x86_32, os: windows-latest },
+            { platform: windows, arch: x86_64, os: ubuntu-22.04 },
+            { platform: windows, arch: x86_32, os: ubuntu-22.04 },
             { platform: macos, arch: universal, os: macos-latest },
             { platform: android, arch: arm64, os: ubuntu-22.04 },
             { platform: android, arch: arm32, os: ubuntu-22.04 },
@@ -61,6 +61,7 @@ jobs:
         with:
           platform: ${{ matrix.target.platform }}
           em-version: 3.1.62
+          mingw-version: "" # Use package manager default
 
       # Build GDExtension (with caches)
       - name: Cache .scons_cache
@@ -73,7 +74,7 @@ jobs:
         env:
           SCONS_CACHE: ${{ github.workspace }}/.scons-cache/
         run: |
-          scons target=${{ matrix.target-type }} platform=${{ matrix.target.platform }} arch=${{ matrix.target.arch }} precision=${{ matrix.float-precision }}
+          scons use_mingw=yes target=${{ matrix.target-type }} platform=${{ matrix.target.platform }} arch=${{ matrix.target.arch }} precision=${{ matrix.float-precision }}
 
       # Sign the binary (macOS only)
       - name: Mac Sign
