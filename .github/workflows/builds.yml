@@ -73,7 +73,7 @@ jobs:
         env:
           SCONS_CACHE: ${{ github.workspace }}/.scons-cache/
         run: |
-          scons use_mingw=yes target=${{ matrix.target-type }} platform=${{ matrix.target.platform }} arch=${{ matrix.target.arch }} precision=${{ matrix.float-precision }}
+          scons lto=auto use_mingw=yes target=${{ matrix.target-type }} platform=${{ matrix.target.platform }} arch=${{ matrix.target.arch }} precision=${{ matrix.float-precision }}
 
       # Sign the binary (macOS only)
       - name: Mac Sign
