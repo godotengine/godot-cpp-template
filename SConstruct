@@ -9,6 +9,7 @@ libname = "EXTENSION-NAME"
 projectdir = "demo"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
+localEnv["build_profile"] = "build_profile.json"
 
 customs = ["custom.py"]
 customs = [os.path.abspath(path) for path in customs]
