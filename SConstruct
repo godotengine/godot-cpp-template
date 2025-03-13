@@ -10,6 +10,12 @@ projectdir = "demo"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
 
+# Build profiles can be used to decrease compile times.
+# The file starts out empty, add to it as needed.
+# You can either specify "disabled_classes", OR
+# explicitly specify "enabled_classes" which disables all other classes.
+localEnv["build_profile"] = str("build_profile.json")
+
 customs = ["custom.py"]
 customs = [os.path.abspath(path) for path in customs]
 
