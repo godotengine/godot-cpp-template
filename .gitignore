@@ -17,6 +17,7 @@ demo/bin/macos/*
 demo/bin/windows/*
 !demo/bin/windows/.gitkeep
 !demo/bin/*.gdextension
+!demo/bin/*.gdextension.uid
 .sconsign*.dblite
 
 # Ignore custom.py
