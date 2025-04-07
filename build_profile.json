@@ -1,0 +1,9 @@
+{
+	"_": "This is an example build profile and not used by default. See the SConstruct file for more information.",
+	"type": "feature_profile",
+	"enabled_classes": [
+		"Node3D",
+		"ImageTexture",
+		"OS"
+	]
+}
