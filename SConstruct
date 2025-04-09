@@ -54,19 +54,14 @@ if env["target"] in ["editor", "template_debug"]:
         print("Not including class reference as we're targeting a pre-4.3 baseline.")
 
 file = "{}{}{}".format(libname, env["suffix"], env["SHLIBSUFFIX"])
-filepath = ""
 
-if env["platform"] == "macos" or env["platform"] == "ios":
-    filepath = "{}.framework/".format(env["platform"])
-    file = "{}{}".format(libname, env["suffix"])
-
-libraryfile = "bin/{}/{}{}".format(env["platform"], filepath, file)
+libraryfile = "bin/{}/{}".format(env["platform"], file)
 library = env.SharedLibrary(
     libraryfile,
     source=sources,
 )
 
-copy = env.InstallAs("{}/bin/{}/{}lib{}".format(projectdir, env["platform"], filepath, file), library)
+copy = env.InstallAs("{}/bin/{}/lib{}".format(projectdir, env["platform"], file), library)
 
 default_args = [library, copy]
 Default(*default_args)
