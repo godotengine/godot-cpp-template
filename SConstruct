@@ -28,13 +28,7 @@ Help(opts.GenerateHelpText(localEnv))
 
 env = localEnv.Clone()
 
-submodule_initialized = False
-dir_name = 'godot-cpp'
-if os.path.isdir(dir_name):
-    if os.listdir(dir_name):
-        submodule_initialized = True
-
-if not submodule_initialized:
+if not (os.path.isdir("godot-cpp") and os.listdir("godot-cpp")):
     print_error("""godot-cpp is not available within this folder, as Git submodules haven't been initialized.
 Run the following command to download godot-cpp:
 
