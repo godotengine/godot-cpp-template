@@ -19,3 +19,9 @@ indent_size = 4
 [*.{yml,yaml}]
 indent_style = space
 indent_size = 2
+
+[{*.cmake,CMakeLists.txt}]
+indent_style = space
+ij_continuation_indent_size = 4
+ij_cmake_force_commands_case = 1
+
