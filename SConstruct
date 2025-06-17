@@ -10,6 +10,12 @@ projectdir = "demo"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
 
+# Add compilation_db tool early to capture all build commands
+try:
+    localEnv.Tool("compilation_db")  # <--- ADD THIS EARLY TOOL LOAD
+except:
+    print("Note: compilation_db tool not available (SCons 4.0+ required)")
+
 # Build profiles can be used to decrease compile times.
 # You can either specify "disabled_classes", OR
 # explicitly specify "enabled_classes" which disables all other classes.
@@ -36,6 +42,11 @@ Run the following command to download godot-cpp:
     sys.exit(1)
 
 env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
+
+# Generate compile_commands.json after setting up build targets
+if "compilation_db" in localEnv["TOOLS"]:  # <--- ADD COMPILATION DB TARGET
+    db = env.CompilationDatabase("compile_commands.json")
+    Default(db)  # Ensure it's built by default
 
 env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp")
