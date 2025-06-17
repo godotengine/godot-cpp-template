@@ -10,6 +10,12 @@ projectdir = "demo"
 
 localEnv = Environment(tools=["default"], PLATFORM="")
 
+# Add compilation_db tool early to capture all build commands
+try:
+    localEnv.Tool("compilation_db")  # <--- ADD THIS EARLY TOOL LOAD
+except:
+    print("Note: compilation_db tool not available (SCons 4.0+ required)")
+
 # Build profiles can be used to decrease compile times.
 # You can either specify "disabled_classes", OR
 # explicitly specify "enabled_classes" which disables all other classes.
@@ -37,24 +43,34 @@ Run the following command to download godot-cpp:
 
 env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
 
+# Generate compile_commands.json after setting up build targets
+if "compilation_db" in localEnv["TOOLS"]:  # <--- ADD COMPILATION DB TARGET
+    db = env.CompilationDatabase("compile_commands.json")
+    Default(db)  # Ensure it's built by default
+
+
 env.Append(CPPPATH=["src/"])
 sources = Glob("src/*.cpp")
 
 if env["target"] in ["editor", "template_debug"]:
     try:
-        doc_data = env.GodotCPPDocData("src/gen/doc_data.gen.cpp", source=Glob("doc_classes/*.xml"))
+        doc_data = env.GodotCPPDocData(
+            "src/gen/doc_data.gen.cpp", source=Glob("doc_classes/*.xml")
+        )
         sources.append(doc_data)
     except AttributeError:
         print("Not including class reference as we're targeting a pre-4.3 baseline.")
 
 # .dev doesn't inhibit compatibility, so we don't need to key it.
 # .universal just means "compatible with all relevant arches" so we don't need to key it.
-suffix = env['suffix'].replace(".dev", "").replace(".universal", "")
+suffix = env["suffix"].replace(".dev", "").replace(".universal", "")
 
-lib_filename = "{}{}{}{}".format(env.subst('$SHLIBPREFIX'), libname, suffix, env.subst('$SHLIBSUFFIX'))
+lib_filename = "{}{}{}{}".format(
+    env.subst("$SHLIBPREFIX"), libname, suffix, env.subst("$SHLIBSUFFIX")
+)
 
 library = env.SharedLibrary(
-    "bin/{}/{}".format(env['platform'], lib_filename),
+    "bin/{}/{}".format(env["platform"], lib_filename),
     source=sources,
 )
 
