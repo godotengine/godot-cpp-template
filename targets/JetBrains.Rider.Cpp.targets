@@ -1,0 +1,19 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <!-- do not rename this target, Rider calls it on the properties evaluation -->
+    <Target Name="CollectPackageReferences" Condition="'$(DesignTimeBuild)' == 'true'">
+        <Message Text="Resolving toolchain..." Importance="High" />
+        
+        <!-- Query clang include paths -->
+        <Exec Command="clang++ -v -E -x c++ /dev/null 2&gt;&amp;1 | sed -n '/#include &lt;...&gt; search starts here:/,/End of search list/p' | tail -n +2 | grep -v 'End of search list' | xargs -I{} echo -n '{};'" ConsoleToMsBuild="true">
+            <Output TaskParameter="ConsoleOutput" PropertyName="ClangIncludeDirs"/>
+        </Exec>
+
+        <PropertyGroup>
+            <NMakeIncludeSearchPath>$(ClangIncludeDirs)$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+        </PropertyGroup>
+
+        <Message Text="NMakeIncludeSearchPath: $(NMakeIncludeSearchPath)"/>
+    </Target>
+
+</Project>

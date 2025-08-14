@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--Requirements for Rider to detect project as a Godot Game root -->
+    <!-- Need changes in Rider to skip this PropertyGroup -->
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <DefineConstants>GODOT;</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="$(MSBuildProjectDirectory)/**"
+              Exclude="$(MSBuildProjectDirectory)/.*;$(MSBuildProjectDirectory)/.*/**" />
+    </ItemGroup>
+</Project>
