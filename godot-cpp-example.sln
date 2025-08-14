@@ -1,0 +1,132 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34221.43
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdext", "gdext.vcxproj", "{9A2FB295-38D9-4994-9497-26FF91C85465}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game", "demo\demo.csproj", "{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug-x86_32|windows = Debug-x86_32|windows
+		Release-x86_32|windows = Release-x86_32|windows
+		Debug-x86_64|windows = Debug-x86_64|windows
+		Release-x86_64|windows = Release-x86_64|windows
+
+		Debug-x86_64|linux = Debug-x86_64|linux
+		Release-x86_64|linux = Release-x86_64|linux
+		Debug-arm64|linux = Debug-arm64|linux
+		Release-arm64|linux = Release-arm64|linux
+		Debug-rv64|linux = Debug-rv64|linux
+		Release-rv64|linux = Release-rv64|linux
+
+		Debug|macos = Debug|macos
+		Release|macos = Release|macos
+
+		Debug-arm64|ios = Debug-arm64|ios
+		Release-arm64|ios = Release-arm64|ios
+
+		Debug-x86_64|android = Debug-x86_64|android
+		Release-x86_64|android = Release-x86_64|android
+		Debug-arm64|android = Debug-arm64|android
+		Release-arm64|android = Release-arm64|android
+
+		Debug-wasm32|web = Debug-wasm32|web
+		Release-wasm32|web = Release-wasm32|web
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-x86_32|windows.ActiveCfg = Debug-x86_32|windows
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-x86_32|windows.Build.0 = Debug-x86_32|windows
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-x86_32|windows.ActiveCfg = Release-x86_32|windows
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-x86_32|windows.Build.0 = Release-x86_32|windows
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-x86_64|windows.ActiveCfg = Debug-x86_64|windows
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-x86_64|windows.Build.0 = Debug-x86_64|windows
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-x86_64|windows.ActiveCfg = Release-x86_64|windows
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-x86_64|windows.Build.0 = Release-x86_64|windows
+
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-x86_64|linux.ActiveCfg = Debug-x86_64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-x86_64|linux.Build.0 = Debug-x86_64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-x86_64|linux.ActiveCfg = Release-x86_64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-x86_64|linux.Build.0 = Release-x86_64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-arm64|linux.ActiveCfg = Debug-arm64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-arm64|linux.Build.0 = Debug-arm64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-arm64|linux.ActiveCfg = Release-arm64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-arm64|linux.Build.0 = Release-arm64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-rv64|linux.ActiveCfg = Debug-rv64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-rv64|linux.Build.0 = Debug-rv64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-rv64|linux.ActiveCfg = Release-rv64|linux
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-rv64|linux.Build.0 = Release-rv64|linux
+
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug|macos.ActiveCfg = Debug|macos
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug|macos.Build.0 = Debug|macos
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release|macos.ActiveCfg = Release|macos
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release|macos.Build.0 = Release|macos
+
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-arm64|ios.ActiveCfg = Debug-arm64|ios
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-arm64|ios.Build.0 = Debug-arm64|ios
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-arm64|ios.ActiveCfg = Release-arm64|ios
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-arm64|ios.Build.0 = Release-arm64|ios
+
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-x86_64|android.ActiveCfg = Debug-x86_64|android
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-x86_64|android.Build.0 = Debug-x86_64|android
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-x86_64|android.ActiveCfg = Release-x86_64|android
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-x86_64|android.Build.0 = Release-x86_64|android
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-arm64|android.ActiveCfg = Debug-arm64|android
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-arm64|android.Build.0 = Debug-arm64|android
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-arm64|android.ActiveCfg = Release-arm64|android
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-arm64|android.Build.0 = Release-arm64|android
+
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-wasm32|web.ActiveCfg = Debug-wasm32|web
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Debug-wasm32|web.Build.0 = Debug-wasm32|web
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-wasm32|web.ActiveCfg = Release-wasm32|web
+		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-wasm32|web.Build.0 = Release-wasm32|web
+		
+		# demo.csproj part
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_32|windows.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_32|windows.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_32|windows.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_32|windows.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|windows.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|windows.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|windows.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|windows.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|linux.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|linux.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|linux.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|linux.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|linux.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|linux.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|linux.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|linux.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-rv64|linux.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-rv64|linux.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-rv64|linux.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-rv64|linux.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug|macos.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug|macos.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release|macos.ActiveCfg = Release|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release|macos.Build.0 = Release|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|ios.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|ios.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|ios.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|ios.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|android.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|android.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|android.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|android.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|android.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|android.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|android.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|android.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-wasm32|web.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-wasm32|web.Build.0 = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-wasm32|web.ActiveCfg = Debug|Any CPU
+		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-wasm32|web.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {75408944-4e38-4094-a91b-4730439ab8ee}
+	EndGlobalSection
+EndGlobal

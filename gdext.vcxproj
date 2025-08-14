@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9A2FB295-38D9-4994-9497-26FF91C85465}</ProjectGuid>
+    <RootNamespace>godot</RootNamespace>
+    <Keyword>MakeFileProj</Keyword>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+
+  <!-- Windows -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-x86_32|windows'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>windows</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch>x86_32</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-x86_32|windows'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>windows</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch>x86_32</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-x86_64|windows'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>windows</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch>x86_64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-x86_64|windows'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>windows</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch>x86_64</Arch>
+  </PropertyGroup>
+
+  <!-- Linux -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-x86_64|linux'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>linux</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch>x86_64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-x86_64|linux'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>linux</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch>x86_64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-arm64|linux'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>linux</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch>arm64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-arm64|linux'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>linux</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch>arm64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-rv64|linux'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>linux</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch>rv64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-rv64|linux'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>linux</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch>rv64</Arch>
+  </PropertyGroup>
+
+  <!-- macOS (no arch in config) -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|macos'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>macos</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch></Arch> <!-- no arch in example.gdextension -->
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|macos'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>macos</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch></Arch>
+  </PropertyGroup>
+
+  <!-- iOS -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-arm64|ios'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>ios</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch>arm64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-arm64|ios'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>ios</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch>arm64</Arch>
+  </PropertyGroup>
+
+  <!-- Android -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-x86_64|android'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>android</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch>x86_64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-x86_64|android'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>android</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch>x86_64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-arm64|android'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>android</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch>arm64</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-arm64|android'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>android</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch>arm64</Arch>
+  </PropertyGroup>
+
+  <!-- Web (wasm32) -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-wasm32|web'">
+    <GodotConfiguration>Debug</GodotConfiguration>
+    <GodotPlatform>web</GodotPlatform>
+    <GodotTemplate>template_debug</GodotTemplate>
+    <BuildType>dev_build=yes</BuildType>
+    <Arch>wasm32</Arch>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-wasm32|web'">
+    <GodotConfiguration>Release</GodotConfiguration>
+    <GodotPlatform>web</GodotPlatform>
+    <GodotTemplate>template_release</GodotTemplate>
+    <Arch>wasm32</Arch>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsWindows>$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))</IsWindows>
+    <IsMac>$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))</IsMac>
+    <IsLinux>$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))</IsLinux>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)/Microsoft.Cpp.Default.props" Condition="$(IsWindows)"/>
+  <Import Project="$(MSBuildProjectDirectory)/targets/JetBrains.Rider.Cpp.targets" Condition="$(IsMac) OR $(IsLinux)"/>
+
+  <PropertyGroup Label="UserMacros">
+    <!-- Mirror useful CMake variables as MSBuild properties for consistency -->
+    <ExtensionName Condition="'$(ExtensionName)' == ''">EXTENSION-NAME</ExtensionName>
+    <!-- The directory of the Godot game project -->
+    <GameProjectDir Condition="'$(GameProjectDir)' == ''">demo</GameProjectDir>
+    <!-- Expose quick-switch properties to the IDE (can be overridden in godot.user.props) -->
+    <Precision Condition="'$(Precision)' == ''">single</Precision> <!--single or double-->
+    <Threads Condition="'$(Threads)' == ''">threads</Threads>
+  </PropertyGroup>
+  <Import Project="$(MSBuildProjectDirectory)/targets/godot.user.props" Condition="Exists('$(MSBuildProjectDirectory)/targets/godot.user.props')"/>
+
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <PlatformToolset>v143</PlatformToolset> <!--Makes Visual Studio happy. Might be overridden in the platform specific import or godot.user.props -->
+    <DefaultPlatformToolset Condition="'$(DefaultPlatformToolset)'==''"/> <!--Workaround until https://youtrack.jetbrains.com/issue/RIDER-123783 is resolved. -->
+    <NMakeIncludeSearchPath>godot-cpp/gen/include;godot-cpp/include;godot-cpp/gdextension;$(NMakeIncludeSearchPath);</NMakeIncludeSearchPath>
+    <!-- Default debugger command should point to GodotEditor; if env var GODOT is provided, use it -->
+    <LocalDebuggerCommand Condition="'$(LocalDebuggerCommand)' == '' and '$(GODOT)' != ''">$(GODOT)</LocalDebuggerCommand>
+    <LocalDebuggerCommand Condition="'$(LocalDebuggerCommand)' == '' and '$(GODOT)' == ''">godot</LocalDebuggerCommand>
+    <!-- Commands executed by Build/Rebuild/Clean in the IDE (Rider, VS) -->
+    <NMakeBuildCommandLine>scons platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate) $(BuildType)</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>scons --clean platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate) &amp;&amp; scons platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate)</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>scons --clean platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate)</NMakeCleanCommandLine>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)/Microsoft.Cpp.props" Condition="$(IsWindows)"/>
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ItemGroup>
+    <None Include="src/**/*.h"/>
+    <None Include="src/**/*.cpp"/>
+  </ItemGroup>
+  
+    <!-- Build/Rebuild/Clean targets for NMake are defined in MSVC, so we need to provide them, when using MSBuild without MSVC targets -->
+  <Import Project="$(MSBuildProjectDirectory)/targets/nmake.substitution.props" Condition="!Exists('$(VCTargetsPath)/Microsoft.Cpp.targets')" />
+  <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" Condition="$(IsWindows)"/>
+</Project>
