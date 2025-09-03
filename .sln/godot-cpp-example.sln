@@ -4,7 +4,7 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdext", "gdext.vcxproj", "{9A2FB295-38D9-4994-9497-26FF91C85465}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game", "demo\demo.csproj", "{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game", "demo.vcxproj", "{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,7 +81,7 @@ Global
 		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-wasm32|web.ActiveCfg = Release-wasm32|web
 		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-wasm32|web.Build.0 = Release-wasm32|web
 		
-		# demo.csproj part
+		# demo.vcxproj part
 		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_32|windows.ActiveCfg = Debug|Any CPU
 		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_32|windows.Build.0 = Debug|Any CPU
 		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_32|windows.ActiveCfg = Debug|Any CPU

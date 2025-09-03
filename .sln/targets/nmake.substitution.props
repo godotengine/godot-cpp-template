@@ -4,17 +4,19 @@
       <!-- override the PlatformToolset, which is set in the godot.vcxproj-->
       <!-- Unknown matches to a set of conservative rules for the code analysis-->
     <PlatformToolset>Unknown</PlatformToolset>
-    <LocalDebuggerCommand Condition="'$(LocalDebuggerCommand)' == ''">$(NMakeOutput)</LocalDebuggerCommand>
   </PropertyGroup>
   <!-- Build/Rebuild/Clean targets for NMake are defined in MSVC, so we need to provide them, when using MSBuild without MSVC targets -->
   <Target Name="Build">
-    <Exec Command="$(NMakeBuildCommandLine)"/>
+    <Exec Command="$(NMakeBuildCommandLine)"
+          WorkingDirectory="$(NMakeWorkingDirectory)"/>
   </Target>
   <Target Name="Rebuild">
-    <Exec Command="$(NMakeReBuildCommandLine)"/>
+    <Exec Command="$(NMakeReBuildCommandLine)"
+          WorkingDirectory="$(NMakeWorkingDirectory)"/>
   </Target>
   <Target Name="Clean">
-    <Exec Command="$(NMakeCleanCommandLine)"/>
+    <Exec Command="$(NMakeCleanCommandLine)"
+          WorkingDirectory="$(NMakeWorkingDirectory)"/>
   </Target>
   <ItemDefinitionGroup>
     <ClCompile>
