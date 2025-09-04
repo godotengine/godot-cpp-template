@@ -12,13 +12,11 @@
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <GodotConfiguration>Debug</GodotConfiguration>
     <GodotTemplate>template_debug</GodotTemplate>
     <BuildType>dev_build=yes</BuildType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GodotConfiguration>Release</GodotConfiguration>
     <GodotTemplate>template_release</GodotTemplate>
   </PropertyGroup>
   
