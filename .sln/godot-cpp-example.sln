@@ -4,8 +4,6 @@ VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdext", "gdext.vcxproj", "{9A2FB295-38D9-4994-9497-26FF91C85465}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game", "demo.vcxproj", "{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-x86_32|windows = Debug-x86_32|windows
@@ -82,46 +80,6 @@ Global
 		{9A2FB295-38D9-4994-9497-26FF91C85465}.Release-wasm32|web.Build.0 = Release-wasm32|web
 		
 		# demo.vcxproj part
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_32|windows.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_32|windows.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_32|windows.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_32|windows.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|windows.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|windows.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|windows.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|windows.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|linux.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|linux.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|linux.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|linux.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|linux.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|linux.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|linux.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|linux.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-rv64|linux.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-rv64|linux.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-rv64|linux.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-rv64|linux.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug|macos.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug|macos.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release|macos.ActiveCfg = Release|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release|macos.Build.0 = Release|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|ios.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|ios.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|ios.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|ios.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|android.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-x86_64|android.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|android.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-x86_64|android.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|android.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-arm64|android.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|android.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-arm64|android.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-wasm32|web.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Debug-wasm32|web.Build.0 = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-wasm32|web.ActiveCfg = Debug|Any CPU
-		{5E7DBDBD-898E-4278-9432-B8BBADEDA80F}.Release-wasm32|web.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
