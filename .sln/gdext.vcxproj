@@ -27,14 +27,6 @@
     <GodotPlatform>windows</GodotPlatform>
     <Arch>x86_32</Arch>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='windows-x86_32'">
-    <GodotPlatform>windows</GodotPlatform>
-    <Arch>x86_32</Arch>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='windows-x86_64'">
-    <GodotPlatform>windows</GodotPlatform>
-    <Arch>x86_64</Arch>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='windows-x86_64'">
     <GodotPlatform>windows</GodotPlatform>
     <Arch>x86_64</Arch>
@@ -45,21 +37,9 @@
     <GodotPlatform>linux</GodotPlatform>
     <Arch>x86_64</Arch>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='linux-x86_64'">
-    <GodotPlatform>linux</GodotPlatform>
-    <Arch>x86_64</Arch>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='linux-arm64'">
     <GodotPlatform>linux</GodotPlatform>
     <Arch>arm64</Arch>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='linux-arm64'">
-    <GodotPlatform>linux</GodotPlatform>
-    <Arch>arm64</Arch>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='linux-rv64'">
-    <GodotPlatform>linux</GodotPlatform>
-    <Arch>rv64</Arch>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='linux-rv64'">
     <GodotPlatform>linux</GodotPlatform>
@@ -71,16 +51,8 @@
     <GodotPlatform>macos</GodotPlatform>
     <Arch></Arch> <!-- no arch in example.gdextension -->
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='macos'">
-    <GodotPlatform>macos</GodotPlatform>
-    <Arch></Arch>
-  </PropertyGroup>
 
   <!-- iOS -->
-  <PropertyGroup Condition="'$(Platform)'=='ios-arm64'">
-    <GodotPlatform>ios</GodotPlatform>
-    <Arch>arm64</Arch>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='ios-arm64'">
     <GodotPlatform>ios</GodotPlatform>
     <Arch>arm64</Arch>
@@ -91,24 +63,12 @@
     <GodotPlatform>android</GodotPlatform>
     <Arch>x86_64</Arch>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='android-x86_64'">
-    <GodotPlatform>android</GodotPlatform>
-    <Arch>x86_64</Arch>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='android-arm64'">
-    <GodotPlatform>android</GodotPlatform>
-    <Arch>arm64</Arch>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='android-arm64'">
     <GodotPlatform>android</GodotPlatform>
     <Arch>arm64</Arch>
   </PropertyGroup>
 
   <!-- Web (wasm32) -->
-  <PropertyGroup Condition="'$(Platform)'=='web-wasm32'">
-    <GodotPlatform>web</GodotPlatform>
-    <Arch>wasm32</Arch>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='web-wasm32'">
     <GodotPlatform>web</GodotPlatform>
     <Arch>wasm32</Arch>
