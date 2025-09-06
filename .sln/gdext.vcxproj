@@ -90,7 +90,16 @@
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v143</PlatformToolset> <!--Makes Visual Studio happy. Might be overridden in the platform specific import or godot.user.props -->
+    <!-- Possible values: V143, Clang_Mac, Clang_Linux, llvm, Clang, ClangCL, MSFS, Unknown-->
+    <!-- Select toolset based on target GodotPlatform. Switches Cpp dialect a bit -->
+    <PlatformToolset Condition="'$(GodotPlatform)'=='windows'">v143</PlatformToolset>
+    <PlatformToolset Condition="'$(GodotPlatform)'=='macos' or '$(GodotPlatform)'=='ios'">Clang_Mac</PlatformToolset>
+    <PlatformToolset Condition="'$(GodotPlatform)'=='linux'">Clang_Linux</PlatformToolset>
+    <PlatformToolset Condition="'$(GodotPlatform)'=='android'">Clang_Linux</PlatformToolset>
+    <PlatformToolset Condition="'$(GodotPlatform)'=='web'">Clang_Linux</PlatformToolset>
+    <!-- Fallback when platform is not matched -->
+    <PlatformToolset Condition="'$(PlatformToolset)'==''">Unknown</PlatformToolset>
+
     <NMakeWorkingDirectory>$(RepoRoot)</NMakeWorkingDirectory>
     <NMakeOutput Condition="'$(NMakeOutput)' == ''">dylib</NMakeOutput> <!--any non empty value required for automatic run configuration generation in Rider -->
     <LocalDebuggerWorkingDirectory Condition="'$(LocalDebuggerWorkingDirectory)' == ''">$(NMakeWorkingDirectory)/demo</LocalDebuggerWorkingDirectory>
