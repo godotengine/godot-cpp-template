@@ -114,12 +114,11 @@
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ItemGroup>
-    <None Include="$(RepoRoot)/src/**/*.h">
-      <Link>src/%(RecursiveDir)%(Filename).%(Extension)</Link>
-    </None>
-    <None Include="$(RepoRoot)/src/**/*.cpp">
-      <Link>src/%(RecursiveDir)%(Filename).%(Extension)</Link>
-    </None>
+    <Link Include="$(RepoRoot)/src" >
+      <Visible>false</Visible>
+    </Link>
+    <None Include="$(RepoRoot)/**/*.h" Exclude="$(RepoRoot)/godot-cpp/**"/>
+    <None Include="$(RepoRoot)/**/*.cpp" Exclude="$(RepoRoot)/godot-cpp/**"/>
   </ItemGroup>
   
     <!-- Build/Rebuild/Clean targets for NMake are defined in MSVC, so we need to provide them, when using MSBuild without MSVC targets -->
