@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!-- link all the files from here, to avoid polluting the demo folder with a vcxproj file, which is unexpected-->
+    <!-- https://github.com/godotengine/godot-cpp-template/pull/95 -->
+    <ItemGroup>
+        <None Include="../demo/**">
+        </None>
+    </ItemGroup>
+
+    <!-- fake build target -->
+    <Target Name="Build" Condition="!Exists('$(VCTargetsPath)/Microsoft.Cpp.targets')">
+    </Target>
+</Project>

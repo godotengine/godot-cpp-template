@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Build/Rebuild/Clean targets for NMake are defined in MSVC, so we need to provide them, when using MSBuild without MSVC targets -->
+  <Target Name="Build">
+    <Exec Command="$(NMakeBuildCommandLine)"
+          WorkingDirectory="$(NMakeWorkingDirectory)"/>
+  </Target>
+  <Target Name="Rebuild">
+    <Exec Command="$(NMakeReBuildCommandLine)"
+          WorkingDirectory="$(NMakeWorkingDirectory)"/>
+  </Target>
+  <Target Name="Clean">
+    <Exec Command="$(NMakeCleanCommandLine)"
+          WorkingDirectory="$(NMakeWorkingDirectory)"/>
+  </Target>
+  <ItemDefinitionGroup>
+    <!-- Reflects what Platform.Common.props does. -->
+    <Link Condition="'$(Arch)' == 'arm64'">
+      <TargetMachine>MachineARM64</TargetMachine>
+    </Link>
+    <Link Condition="'$(Arch)' == 'x86_64'">
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <Link Condition="'$(Arch)' == 'x86_32'">
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>
