@@ -155,7 +155,7 @@
     <IsLinux>$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))</IsLinux>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.Default.props" Condition="$(IsWindows)"/>
-  <Import Project="$(MSBuildProjectDirectory)/targets/JetBrains.Rider.Cpp.targets" Condition="$(IsMac) OR $(IsLinux)"/>
+  <Import Project="$(MSBuildProjectDirectory)/.sln/targets/JetBrains.Rider.Cpp.targets" Condition="$(IsMac) OR $(IsLinux)"/>
 
   <PropertyGroup Label="UserMacros">
     <!-- Mirror useful CMake variables as MSBuild properties for consistency -->
@@ -166,7 +166,7 @@
     <Precision Condition="'$(Precision)' == ''">single</Precision> <!--single or double-->
     <Threads Condition="'$(Threads)' == ''">threads</Threads>
   </PropertyGroup>
-  <Import Project="$(MSBuildProjectDirectory)/targets/godot.user.props" Condition="Exists('$(MSBuildProjectDirectory)/targets/godot.user.props')"/>
+  <Import Project="$(MSBuildProjectDirectory)/.sln/targets/godot.user.props" Condition="Exists('$(MSBuildProjectDirectory)/.sln/targets/godot.user.props')"/>
 
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Makefile</ConfigurationType>
@@ -189,8 +189,8 @@
     <None Include="src/**/*.h"/>
     <None Include="src/**/*.cpp"/>
   </ItemGroup>
-  
+
     <!-- Build/Rebuild/Clean targets for NMake are defined in MSVC, so we need to provide them, when using MSBuild without MSVC targets -->
-  <Import Project="$(MSBuildProjectDirectory)/targets/nmake.substitution.props" Condition="!Exists('$(VCTargetsPath)/Microsoft.Cpp.targets')" />
+  <Import Project="$(MSBuildProjectDirectory)/.sln/targets/nmake.substitution.props" Condition="!Exists('$(VCTargetsPath)/Microsoft.Cpp.targets')" />
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" Condition="$(IsWindows)"/>
 </Project>
