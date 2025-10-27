@@ -20,6 +20,17 @@
 		<GodotTemplate>template_release</GodotTemplate>
 	</PropertyGroup>
 
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="Debug|x64">
+			<Configuration>Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="Release|x64">
+			<Configuration>Release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+
 	<!-- Windows -->
 	<PropertyGroup Condition="'$(Platform)'=='windows-x86_32'">
 		<GodotPlatform>windows</GodotPlatform>
@@ -98,18 +109,29 @@
 		<PlatformToolset Condition="'$(GodotPlatform)'=='android'">Clang_Linux</PlatformToolset>
 		<PlatformToolset Condition="'$(GodotPlatform)'=='web'">Clang_Linux</PlatformToolset>
 		<!-- Fallback when platform is not matched -->
-		<PlatformToolset Condition="'$(PlatformToolset)'==''">Unknown</PlatformToolset>
+		<PlatformToolset Condition="'$(PlatformToolset)'==''">v143</PlatformToolset>
+		<DefaultPlatformToolset>$(PlatformToolset)</DefaultPlatformToolset>
 
 		<NMakeWorkingDirectory>$(RepoRoot)</NMakeWorkingDirectory>
 		<NMakeOutput Condition="'$(NMakeOutput)' == ''">dylib</NMakeOutput> <!--any non empty value required for automatic run configuration generation in Rider -->
 		<LocalDebuggerWorkingDirectory Condition="'$(LocalDebuggerWorkingDirectory)' == ''">$(NMakeWorkingDirectory)/demo</LocalDebuggerWorkingDirectory>
 		<LocalDebuggerCommandArguments>--editor</LocalDebuggerCommandArguments>
 		<NMakeIncludeSearchPath>$(RepoRoot)/godot-cpp/gen/include;$(RepoRoot)/godot-cpp/include;$(RepoRoot)/godot-cpp/gdextension;$(NMakeIncludeSearchPath);</NMakeIncludeSearchPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="!$(IsWindows)" Label="Configuration">
 		<!-- Commands executed by Build/Rebuild/Clean in the IDE (Rider, VS) -->
 		<NMakeBuildCommandLine>scons platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate) $(BuildType)</NMakeBuildCommandLine>
 		<NMakeReBuildCommandLine>scons --clean platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate) &amp;&amp; scons platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate)</NMakeReBuildCommandLine>
 		<NMakeCleanCommandLine>scons --clean platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate)</NMakeCleanCommandLine>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="$(IsWindows)" Label="Configuration">
+		<NMakeBuildCommandLine>cmd /V /C set "PATH=$(PATH)" ^&amp; scons platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate) $(BuildType)</NMakeBuildCommandLine>
+		<NMakeReBuildCommandLine>cmd /V /C set "PATH=$(PATH)" ^&amp; scons --clean platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate) ^&amp; scons platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate)</NMakeReBuildCommandLine>
+		<NMakeCleanCommandLine>cmd /V /C set "PATH=$(PATH)" ^&amp; scons --clean platform=$(GodotPlatform) arch=$(Arch) target=$(GodotTemplate)</NMakeCleanCommandLine>
+	</PropertyGroup>
+
 	<Import Project="$(VCTargetsPath)/Microsoft.Cpp.props" Condition="$(IsWindows)"/>
 	<ImportGroup Label="ExtensionSettings">
 	</ImportGroup>
