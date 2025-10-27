@@ -20,23 +20,12 @@
 		<GodotTemplate>template_release</GodotTemplate>
 	</PropertyGroup>
 
-	<ItemGroup Label="ProjectConfigurations">
-		<ProjectConfiguration Include="Debug|x64">
-			<Configuration>Debug</Configuration>
-			<Platform>x64</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Release|x64">
-			<Configuration>Release</Configuration>
-			<Platform>x64</Platform>
-		</ProjectConfiguration>
-	</ItemGroup>
-
-	<!-- Windows -->
-	<PropertyGroup Condition="'$(Platform)'=='windows-x86_32'">
+	<!-- Windows, MSVC wants Platform specific Win32 or x64 -->
+	<PropertyGroup Condition="'$(Platform)'=='Win32'">
 		<GodotPlatform>windows</GodotPlatform>
 		<Arch>x86_32</Arch>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(Platform)'=='windows-x86_64'">
+	<PropertyGroup Condition="'$(Platform)'=='x64'">
 		<GodotPlatform>windows</GodotPlatform>
 		<Arch>x86_64</Arch>
 	</PropertyGroup>
