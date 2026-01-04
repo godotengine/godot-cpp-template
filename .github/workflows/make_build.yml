@@ -1,9 +1,25 @@
 # For syntax, see https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
 # This workflow is triggered manually on the "Actions" tab on GitHub, and can be used to create releases.
 
-name: Make a GDExtension build for all supported platforms
+name: Make and publish a GDExtension build for all supported platforms
 on:
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "tag_name"
+        required: true
+        default: "tag_name"
+      release_name:
+        description: "release_name"
+        required: true
+        default: "release_name"
+      asset_id:
+        description: "The id of the asset in the asset store."
+        required: true
+        default: "asset_id"
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -88,7 +104,7 @@ jobs:
         with:
           name: godot-cpp-template-${{ matrix.target.platform }}-${{ matrix.target.arch }}-${{ matrix.float-precision }}-${{ matrix.target-type }}
           path: |
-            ${{ github.workspace }}/bin/**
+            ${{ github.workspace }}/demo/bin/**
 
   # Merges all the build artifacts together into a single godot-cpp-template artifact.
   # If you comment out this step, all the builds will be uploaded individually.
@@ -102,3 +118,45 @@ jobs:
           name: godot-cpp-template
           pattern: godot-cpp-template-*
           delete-merged: true
+  
+  # Create a GitHub release
+  release:
+    runs-on: ubuntu-22.04
+    needs: merge
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Download merged artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: godot-cpp-template
+          path: release/addons/godot-cpp-template/
+
+      - name: Create archive
+        shell: bash
+        run: |
+          sudo apt-get update && sudo apt-get install -y zip
+          cd release && zip -r ../godot-cpp-template.zip .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.event.inputs.tag_name }}
+          name: ${{ github.event.inputs.release_name }}
+          body_path: CHANGELOG.md
+          make_latest: true
+          files: godot-cpp-template.zip
+
+  publish:
+    runs-on: ubuntu-22.04
+    needs: release
+    steps:
+      - name: Publish new version to asset lib
+        uses: deep-entertainment/godot-asset-lib-action@v0.4.0
+        with:
+          # https://docs.github.com/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets
+          username: ${{ secrets.ASSET_STORE_USERNAME }}
+          password: ${{ secrets.ASSET_STORE_PASSWORD }}
+          assetId: ${{ github.event.inputs.asset_id }}
