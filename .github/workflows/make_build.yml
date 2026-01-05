@@ -5,18 +5,28 @@ name: Make and publish a GDExtension build for all supported platforms
 on:
   workflow_dispatch:
     inputs:
+      release:
+        description: "Create a new GitHub release (Required to publish on Asset Lib)"
+        type: boolean
+        required: false
+        default: false
       tag_name:
         description: "tag_name"
-        required: true
-        default: "tag_name"
+        required: false
+        default: ""
       release_name:
         description: "release_name"
-        required: true
-        default: "release_name"
+        required: false
+        default: ""
+      publish:
+        description: "Publish new version to asset lib (Requires ASSET_STORE_USERNAME and ASSET_STORE_PASSWORD secrets, and .asset-template.json.hb to be edited)."
+        type: boolean
+        required: false
+        default: false
       asset_id:
-        description: "The id of the asset in the asset store."
-        required: true
-        default: "asset_id"
+        description: "The asset ID."
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -121,6 +131,7 @@ jobs:
   
   # Create a GitHub release
   release:
+    if: ${{ inputs.release}}
     runs-on: ubuntu-22.04
     needs: merge
     steps:
@@ -150,6 +161,7 @@ jobs:
           files: godot-cpp-template.zip
 
   publish:
+    if: ${{ inputs.publish && inputs.release }}
     runs-on: ubuntu-22.04
     needs: release
     steps:
