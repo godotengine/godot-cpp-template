@@ -66,8 +66,9 @@ def goc_build(target, source, env):
     else:
         configure.append("-DCMAKE_BUILD_TYPE=Release")
 
-    subprocess.run(configure, shell=True, env=environ.copy())
-    subprocess.run(build, shell=True, env=environ.copy())
+    space = " "
+    subprocess.run(space.join(configure), shell=True, env=environ.copy())
+    subprocess.run(space.join(build), shell=True, env=environ.copy())
 
 def find_goc(env: Environment):
     exec_name = "goc"
@@ -78,9 +79,7 @@ def find_goc(env: Environment):
         src_dir = normalize_path("godot-object-compiler")
         exec_path = normalize_path(f"godot-object-compiler/build/{exec_name}")
 
-
         env['GOC_SOURCE_DIR'] = src_dir
-
         goc_source = glob(f'{src_dir}/src/**/*.cpp', recursive=True)
         goc_headers = glob(f'{src_dir}/src/**/*.h', recursive=True)
         goc_source.extend(goc_headers)

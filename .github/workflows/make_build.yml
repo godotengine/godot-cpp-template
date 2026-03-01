@@ -41,6 +41,16 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Setup Treesitter
+        if: ${{matrix.target.os == 'windows-latest'}}
+        run: |
+          choco install tree-sitter
+      
+      - name: Setup Treesitter
+        if: ${{matrix.target.os == 'macos-latest'}}
+        run: |
+          brew install tree-sitter-cli
+
       # Add linux x86_32 toolchain
       - name: Install multilib support
         if: ${{ matrix.target.platform == 'linux' && matrix.target.arch == 'x86_32' }}
@@ -55,7 +65,6 @@ jobs:
           em-version: 3.1.62
 
       # Build GDExtension (with caches)
-
       - name: Restore .scons_cache
         uses: ./godot-cpp/.github/actions/godot-cache-restore
         with:

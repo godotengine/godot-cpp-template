@@ -43,15 +43,15 @@ jobs:
         with:
           submodules: recursive
 
-      # Lint
-      #- name: Setup clang-format
-      #  shell: bash
-      #  run: |
-      #    python -m pip install clang-format
-      #- name: Run clang-format
-      #  shell: bash
-      #  run: |
-      #    clang-format src/** --dry-run --Werror
+      - name: Setup Treesitter
+        if: ${{matrix.target.os == 'windows-latest'}}
+        run: |
+          choco install tree-sitter
+      
+      - name: Setup Treesitter
+        if: ${{matrix.target.os == 'macos-latest'}}
+        run: |
+          brew install tree-sitter-cli
 
       # Add linux x86_32 toolchain
       - name: Install multilib support
