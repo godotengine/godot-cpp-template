@@ -57,14 +57,19 @@ def find_goc(env: Environment):
     if os.path.exists("godot-object-compiler"):
         build_dir = normalize_path("godot-object-compiler/build")
         exec_path = normalize_path(f"godot-object-compiler/build/{exec_name}")
+
+        if build_dir == None:
+            raise Exception("Could not create build directory path")
+
+        if not os.path.isdir(build_dir):
+            os.mkdir(build_dir)
+
         command = f"\
-            mkdir -p {build_dir} &&\
             cmake -B{build_dir} -Sgodot-object-compiler -DCMAKE_BUILD_TYPE=Release && \
             cmake --build {build_dir}"
 
         if platform.system() == "Windows":
             command = f"\
-                if not exists {build_dir} mkdir {build_dir} &&\
                 cmake -B{build_dir} -Sgodot-object-compiler && \
                 cmake --build {build_dir} --config Release"
 
