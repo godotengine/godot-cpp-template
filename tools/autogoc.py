@@ -64,7 +64,7 @@ def find_goc(env: Environment):
 
         if platform.system() == "Windows":
             command = f"\
-                mkdir {build_dir} &&\
+                if not exists {build_dir} mkdir {build_dir} &&\
                 cmake -B{build_dir} -Sgodot-object-compiler && \
                 cmake --build {build_dir} --config Release"
 
