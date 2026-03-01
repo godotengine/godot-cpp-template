@@ -1,7 +1,6 @@
 import os
 import platform
 from os import environ
-from pydoc import plainpager
 
 from SCons.Environment import Environment
 from SCons.Node import FS
@@ -86,7 +85,17 @@ def find_goc(env: Environment):
     if os.path.exists(exec_name):
         return normalize_path(exec_name)
 
-    raise Exception("GOC executable not found")
+    raise Exception(
+        "GOC executable not found. Set the GOC_EXECUTABLE environment variable or add godot-object-compiler as a submodule to your project root."
+    )
+
+
+def find_godot_cpp_path(include_dirs):
+    for dir in include_dirs:
+        if "godot-cpp" in dir:
+            return dir.split("godot-cpp")[0] + "godot-cpp"
+
+    raise Exception("Could no find godot-cpp in include paths.")
 
 
 def create_goc_shared_library(env: Environment, lib_name: str, source, root_path: str):
@@ -116,7 +125,13 @@ def create_goc_shared_library(env: Environment, lib_name: str, source, root_path
     env.AlwaysBuild(run_goc)
     env.Alias("goc_generated", generated_source)
     env.Depends(run_goc, goc_path)
-    env.Depends(run_goc, "godot-cpp/bin/libgodot-cpp.linux.template_debug.x86_64.a")
+
+    godot_cpp_path = find_godot_cpp_path(include_dirs)
+    godot_cpp_lib = (
+        godot_cpp_path + "/bin/libgodot-cpp" + env["suffix"] + env["LIBSUFFIX"]
+    )
+
+    env.Depends(run_goc, godot_cpp_lib)
 
     final_source = []
     final_source.extend(generated_source)
