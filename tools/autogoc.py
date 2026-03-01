@@ -55,6 +55,7 @@ def find_goc(env: Environment):
         exec_name += ".exe"
 
     if os.path.exists("godot-object-compiler"):
+        src_dir = normalize_path("godot-object-compiler")
         build_dir = normalize_path("godot-object-compiler/build")
         exec_path = normalize_path(f"godot-object-compiler/build/{exec_name}")
 
@@ -65,12 +66,12 @@ def find_goc(env: Environment):
             os.mkdir(build_dir)
 
         command = f"\
-            cmake -B{build_dir} -Sgodot-object-compiler -DCMAKE_BUILD_TYPE=Release && \
+            cmake -B{build_dir} -S{src_dir} -DCMAKE_BUILD_TYPE=Release && \
             cmake --build {build_dir}"
 
         if platform.system() == "Windows":
             command = f"\
-                cmake -B{build_dir} -Sgodot-object-compiler && \
+                cmake -B{build_dir} -S{src_dir} && \
                 cmake --build {build_dir} --config Release"
 
         env.Command(
