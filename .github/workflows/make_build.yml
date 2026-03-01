@@ -39,7 +39,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: recursive
 
       # Add linux x86_32 toolchain
       - name: Install multilib support
