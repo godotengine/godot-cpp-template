@@ -1,4 +1,7 @@
 import os
+import platform
+from os import environ
+from pydoc import plainpager
 
 from SCons.Environment import Environment
 from SCons.Node import FS
@@ -47,8 +50,49 @@ def in_generated_sources(sources, root_path, generated_path):
     return result
 
 
+def find_goc(env: Environment):
+    exec_name = "goc"
+    if platform.system() == "Windows":
+        exec_name += ".exe"
+
+    if os.path.exists("godot-object-compiler"):
+        build_dir = normalize_path("godot-object-compiler/build")
+        exec_path = normalize_path(f"godot-object-compiler/build/{exec_name}")
+        command = f"\
+            mkdir -p {build_dir} &&\
+            cmake -B{build_dir} -Sgodot-object-compiler -DCMAKE_BUILD_TYPE=Release && \
+            cmake --build {build_dir}"
+
+        if platform.system() == "Windows":
+            command = f"\
+                mkdir {build_dir} &&\
+                cmake -B{build_dir} -Sgodot-object-compiler && \
+                cmake --build {build_dir} --config Release"
+
+        env.Command(
+            exec_path,
+            source=[],
+            action=command,
+        )
+
+        print(f"Using built GOC executable: {exec_path}")
+        return exec_path
+
+    environment_var = environ.get("GOC_EXECUTABLE")
+    if environment_var is not None:
+        print(f"Using GOC executable: {environment_var}")
+        return environment_var
+
+    if os.path.exists(exec_name):
+        return normalize_path(exec_name)
+
+    raise Exception("GOC executable not found")
+
+
 def create_goc_shared_library(env: Environment, lib_name: str, source, root_path: str):
+    goc_path = find_goc(env)
     goc_dir = normalize_path(".goc")
+
     generated_dir = normalize_path(".goc/generated")
     cache_dir = normalize_path(".goc/cache")
     root_dir = normalize_path(root_path)
@@ -61,7 +105,7 @@ def create_goc_shared_library(env: Environment, lib_name: str, source, root_path
     run_goc = env.Command(
         generated_source,
         source=[],
-        action=f"goc generate \
+        action=f"{goc_path} generate \
             -P={goc_dir} \
             -C={cache_dir} \
             -G={generated_dir} \
@@ -71,16 +115,13 @@ def create_goc_shared_library(env: Environment, lib_name: str, source, root_path
     )
     env.AlwaysBuild(run_goc)
     env.Alias("goc_generated", generated_source)
+    env.Depends(run_goc, goc_path)
     env.Depends(run_goc, "godot-cpp/bin/libgodot-cpp.linux.template_debug.x86_64.a")
-    # env.Depends(run_goc, source)
-    # env.SideEffect(generated_source, run_goc)
 
     final_source = []
     final_source.extend(generated_source)
     final_source.extend(sources)
     env.Depends(source, generated_source)
-
     env.AppendUnique(CPPPATH=[generated_dir])
 
-    extension = env.SharedLibrary(lib_name, source=final_source)
-    return extension
+    return env.SharedLibrary(lib_name, source=final_source)
