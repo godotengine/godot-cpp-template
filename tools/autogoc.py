@@ -1,9 +1,12 @@
 import os
 import platform
+import subprocess
+from glob import glob
 from os import environ
 
 from SCons.Environment import Environment
 from SCons.Node import FS
+from SCons.Action import Action
 
 
 def normalize_path(path):
@@ -48,6 +51,23 @@ def in_generated_sources(sources, root_path, generated_path):
 
     return result
 
+def goc_build(target, source, env):
+    source_dir = env['GOC_SOURCE_DIR']
+    build_dir = os.path.join(source_dir, 'build')
+
+    if not os.path.isdir(build_dir):
+        os.mkdir(build_dir)
+
+    configure = ["cmake", f"-B{build_dir}", f"-S{source_dir}"]
+    build = ["cmake", "--build", build_dir]
+
+    if platform.system() == "Windows":
+        build.extend(["--config", "Release"])
+    else:
+        configure.append("-DCMAKE_BUILD_TYPE=Release")
+
+    subprocess.run(configure, shell=True, env=environ.copy())
+    subprocess.run(build, shell=True, env=environ.copy())
 
 def find_goc(env: Environment):
     exec_name = "goc"
@@ -56,28 +76,18 @@ def find_goc(env: Environment):
 
     if os.path.exists("godot-object-compiler"):
         src_dir = normalize_path("godot-object-compiler")
-        build_dir = normalize_path("godot-object-compiler/build")
         exec_path = normalize_path(f"godot-object-compiler/build/{exec_name}")
 
-        if build_dir == None:
-            raise Exception("Could not create build directory path")
 
-        if not os.path.isdir(build_dir):
-            os.mkdir(build_dir)
+        env['GOC_SOURCE_DIR'] = src_dir
 
-        command = f"\
-            cmake -B{build_dir} -S{src_dir} -DCMAKE_BUILD_TYPE=Release && \
-            cmake --build {build_dir}"
-
-        if platform.system() == "Windows":
-            command = f"\
-                cmake -B{build_dir} -S{src_dir} && \
-                cmake --build {build_dir} --config Release"
-
+        goc_source = glob(f'{src_dir}/src/**/*.cpp', recursive=True)
+        goc_headers = glob(f'{src_dir}/src/**/*.h', recursive=True)
+        goc_source.extend(goc_headers)
         env.Command(
             exec_path,
-            source=[],
-            action=command,
+            source=goc_source,
+            action=Action(goc_build, cmdstr="Godot Object Compiler: Building Tool"),
         )
 
         print(f"Using built GOC executable: {exec_path}")
@@ -117,16 +127,20 @@ def create_goc_shared_library(env: Environment, lib_name: str, source, root_path
     generated_source = in_generated_sources(source, root_dir, generated_dir)
     comma = ","
 
-    run_goc = env.Command(
-        generated_source,
-        source=[],
-        action=f"{goc_path} generate \
+    run_action = Action(
+        f"{goc_path} generate \
             -P={goc_dir} \
             -C={cache_dir} \
             -G={generated_dir} \
             -I={comma.join(str(f) for f in include_dirs)} \
             -S={comma.join(str(f) for f in sources)} \
             -R={root_dir}",
+        cmdstr="Godot Object Compiler: Generating bindings")
+    
+    run_goc = env.Command(
+        generated_source,
+        source=[],
+        action=run_action
     )
     env.AlwaysBuild(run_goc)
     env.Alias("goc_generated", generated_source)
