@@ -47,7 +47,7 @@ jobs:
         if: ${{matrix.target.os == 'windows-latest'}}
         run: |
           choco install tree-sitter
-      
+
       - name: Setup Treesitter
         if: ${{matrix.target.os == 'macos-latest'}}
         run: |
@@ -67,7 +67,6 @@ jobs:
           em-version: 3.1.62
 
       # Build GDExtension (with caches)
-
       - name: Restore .scons_cache
         uses: ./godot-cpp/.github/actions/godot-cache-restore
         with:

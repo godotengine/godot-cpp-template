@@ -90,7 +90,7 @@ IncludeCategories:
     Priority: 2
   - Regex: "^<.*"
     Priority: 3
-  - Regex: '".*\.generated.h"'
+  - Regex: '".*generated.h"'
     Priority: 4
 # IncludeIsMainRegex: '(Test)?$'
 # IncludeIsMainSourceRegex: ''
