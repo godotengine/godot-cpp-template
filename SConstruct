@@ -2,8 +2,8 @@
 import os
 import sys
 
-from methods import print_error
 from tools.autogoc import create_goc_shared_library
+from tools.methods import print_error
 
 libname = "EXTENSION-NAME"
 projectdir = "project"
