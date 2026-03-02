@@ -41,17 +41,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: recursive
 
-      # Lint
-      #- name: Setup clang-format
-      #  shell: bash
-      #  run: |
-      #    python -m pip install clang-format
-      #- name: Run clang-format
-      #  shell: bash
-      #  run: |
-      #    clang-format src/** --dry-run --Werror
+      - name: Setup Treesitter
+        if: ${{matrix.target.os == 'windows-latest'}}
+        run: |
+          choco install tree-sitter
+
+      - name: Setup Treesitter
+        if: ${{matrix.target.os == 'macos-latest'}}
+        run: |
+          brew install tree-sitter-cli
 
       # Add linux x86_32 toolchain
       - name: Install multilib support
@@ -66,13 +66,13 @@ jobs:
           platform: ${{ matrix.target.platform }}
           em-version: 3.1.62
 
-      # Build GDExtension (with caches)
-
-      - name: Restore .scons_cache
-        uses: ./godot-cpp/.github/actions/godot-cache-restore
+      - name: Restore cache
+        uses: actions/cache/restore@v4
         with:
-          scons-cache: ${{ github.workspace }}/.scons-cache/
-          cache-name: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.float-precision }}_${{ matrix.target-type }}
+          key: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.float-precision }}_${{ matrix.target-type }}
+          path: |
+            ${{github.workspace}}/godot-object-compiler/build/
+            ${{github.workspace}}/.scons-cache/
 
       - name: Build GDExtension Debug Build
         shell: sh
@@ -81,8 +81,10 @@ jobs:
         run: |
           scons target=${{ matrix.target-type }} platform=${{ matrix.target.platform }} arch=${{ matrix.target.arch }} precision=${{ matrix.float-precision }}
 
-      - name: Save .scons_cache
-        uses: ./godot-cpp/.github/actions/godot-cache-save
+      - name: Save cache
+        uses: actions/cache/save@v4
         with:
-          scons-cache: ${{ github.workspace }}/.scons-cache/
-          cache-name: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.float-precision }}_${{ matrix.target-type }}
+          key: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.float-precision }}_${{ matrix.target-type }}
+          path: |
+            ${{github.workspace}}/godot-object-compiler/build/
+            ${{github.workspace}}/.scons-cache/

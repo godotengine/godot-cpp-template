@@ -6,21 +6,17 @@
 #include <godot_cpp/godot.hpp>
 
 #include "example_class.h"
+#include "generated_register_types.h"
 
 using namespace godot;
 
 void initialize_gdextension_types(ModuleInitializationLevel p_level)
 {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
-	}
-	GDREGISTER_CLASS(ExampleClass);
+	generated_register_module(p_level);
 }
 
 void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
-	}
+	generated_unregister_module(p_level);
 }
 
 extern "C"
