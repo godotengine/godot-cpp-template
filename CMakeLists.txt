@@ -24,7 +24,9 @@ if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/godot-cpp/src")
         COMMAND_ERROR_IS_FATAL ANY
     )
 endif()
+
 add_subdirectory(godot-cpp SYSTEM)
+add_subdirectory(godot-object-compiler)
 
 # Add godot-cpp's module path and include the exported functions.
 # This is made available for documentation generation
@@ -47,11 +49,14 @@ add_library(${LIBNAME} SHARED)
 
 target_sources(${LIBNAME}
     PRIVATE
-    src/register_types.cpp
-    src/register_types.h
-    src/example_class.cpp
-    src/example_class.h
+    ${CMAKE_CURRENT_LIST_DIR}/src/register_types.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/register_types.h
+    ${CMAKE_CURRENT_LIST_DIR}/src/example_class.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/example_class.h
 )
+
+include(tools/autogoc.cmake)
+target_autogoc(${LIBNAME} ${CMAKE_CURRENT_LIST_DIR}/src)
 
 # Fetch a list of the xml files to use for documentation and add to our target
 file(GLOB_RECURSE DOC_XML LIST_DIRECTORIES NO CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/doc_classes/*.xml")

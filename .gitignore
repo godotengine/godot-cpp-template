@@ -58,5 +58,13 @@ compile_commands.json
 .idea/
 
 # Cmake
+build
 cmake-build*
 CMakeUserPresets.json
+
+# clangd
+.cache
+
+# Godot Object Compiler
+goc
+.goc
