@@ -85,7 +85,7 @@ def find_goc(env: Environment):
         goc_source = glob(f"{src_dir}/src/**/*.cpp", recursive=True)
         goc_headers = glob(f"{src_dir}/src/**/*.h", recursive=True)
         goc_source.extend(goc_headers)
-        build_goc = env.Command(
+        env.Command(
             exec_path,
             source=goc_source,
             action=Action(goc_build, cmdstr="Godot Object Compiler: Building Tool"),

@@ -84,14 +84,14 @@ ConstructorInitializerAllOnOneLineOrOnePerLine: true
 #   - KJ_IF_MAYBE
 # IncludeBlocks:   Preserve
 IncludeCategories:
-  - Regex: '".*"'
-    Priority: 1
   - Regex: '^<.*\.h>'
     Priority: 2
   - Regex: "^<.*"
     Priority: 3
-  - Regex: '".*generated.h"'
+  - Regex: '".*.generated.h"'
     Priority: 4
+  - Regex: '".*"'
+    Priority: 1
 # IncludeIsMainRegex: '(Test)?$'
 # IncludeIsMainSourceRegex: ''
 # IndentAccessModifiers: false

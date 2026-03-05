@@ -68,9 +68,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           key: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.float-precision }}_${{ matrix.target-type }}
-          path: |
-            ${{github.workspace}}/godot-object-compiler/build/
-            ${{github.workspace}}/.scons-cache/
+          path: ${{github.workspace}}/.scons-cache/
 
       - name: Build GDExtension Debug Build
         shell: sh
@@ -83,9 +81,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           key: ${{ matrix.target.platform }}_${{ matrix.target.arch }}_${{ matrix.float-precision }}_${{ matrix.target-type }}
-          path: |
-            ${{github.workspace}}/godot-object-compiler/build/
-            ${{github.workspace}}/.scons-cache/
+          path: ${{github.workspace}}/.scons-cache/
 
       # Clean up compilation files
       - name: Windows - Delete compilation files
