@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.17)
 if(CMAKE_C_COMPILER)
 endif()
 
-set(LIBNAME "EXTENSION-NAME" CACHE STRING "The name of the library")
+set(LIBNAME "EXTENSION-NAME") # "The name of the library"
 set(GODOT_PROJECT_DIR "project" CACHE STRING "The directory of a Godot project folder")
 
 # Make sure all the dependencies are satisfied
