@@ -7,7 +7,7 @@ function(target_autogoc TARGET ROOT_DIR)
 
     set(GOC_GENERATED_DIR ${BINARY_DIR}/.goc/generated)
     set(GOC_GENERATED_FILES "")
-    list(APPEND GOC_GENERATED_FILES  ${GOC_GENERATED_DIR}/generated_register_types.h)
+    list(APPEND GOC_GENERATED_FILES ${GOC_GENERATED_DIR}/generated_register_types.h)
     list(APPEND GOC_GENERATED_FILES ${GOC_GENERATED_DIR}/generated_register_types.cpp)
     foreach (SOURCE_PATH ${SOURCES})
         cmake_path(RELATIVE_PATH SOURCE_PATH BASE_DIRECTORY ${ROOT_DIR} OUTPUT_VARIABLE RELATIVE)
@@ -18,14 +18,16 @@ function(target_autogoc TARGET ROOT_DIR)
     endforeach ()
 
     if (TARGET godot-cpp)
-        get_target_property(GodotCPP_INCLUDE_DIRECTORIES godot-cpp INCLUDE_DIRECTORIES)
-        list(PREPEND INCLUDE_DIRECTORIES ${GodotCPP_INCLUDE_DIRECTORIES})
-    else()
+        get_target_property(GODOT_CPP_FOLDER godot-cpp SOURCE_DIR)
+        set(GDEXTENSION_API_FILE ${GODOT_CPP_FOLDER}/gdextension/extension_api.json)
+        get_target_property(GODOT_CPP_INCLUDE_DIRECTORIES godot-cpp INCLUDE_DIRECTORIES)
+    else ()
         message(FATAL_ERROR "AUTOGOC: target godot-cpp not found.")
     endif ()
 
     list(JOIN INCLUDE_DIRECTORIES "," INCLUDE_JOINED)
     list(JOIN SOURCES "," SOURCES_JOINED)
+    list(JOIN GODOT_CPP_INCLUDE_DIRECTORIES "," GODOT_CPP_INCLUDE_DIRECTORIES_JOINED)
 
     if (TARGET goc)
         get_target_property(GOC_BINARY_DIR goc BINARY_DIR)
@@ -34,7 +36,15 @@ function(target_autogoc TARGET ROOT_DIR)
         add_custom_target(RunGOC
                 SOURCES ${SOURCES}
                 BYPRODUCTS ${GOC_GENERATED_FILES}
-                COMMAND ${GOC_BINARY_DIR}/goc${CMAKE_EXECUTABLE_SUFFIX} generate -R=${ROOT_DIR} -P=.goc -C=.goc/cache -G=.goc/generated -I=${INCLUDE_JOINED} -S=${SOURCES_JOINED}
+                COMMAND ${GOC_BINARY_DIR}/goc${CMAKE_EXECUTABLE_SUFFIX} generate
+                -R=${ROOT_DIR}
+                -P=.goc
+                -C=.goc/cache
+                -G=.goc/generated
+                -I=${INCLUDE_JOINED}
+                -S=${SOURCES_JOINED}
+                -GPP=${GODOT_CPP_INCLUDE_DIRECTORIES_JOINED}
+                -E=${GDEXTENSION_API_FILE}
                 WORKING_DIRECTORY ${BINARY_DIR}
                 DEPENDS goc godot-cpp generate_bindings ${SOURCES}
                 COMMENT "GOC: Generating Bindings"
@@ -44,7 +54,15 @@ function(target_autogoc TARGET ROOT_DIR)
         add_custom_target(RunGOC
                 SOURCES ${SOURCES}
                 BYPRODUCTS ${GOC_GENERATED_FILES}
-                COMMAND $ENV{GOC_EXECUTABLE} generate -R=${ROOT_DIR} -P=.goc -C=.goc/cache -G=.goc/generated -I=${INCLUDE_JOINED} -S=${SOURCES_JOINED}
+                COMMAND $ENV{GOC_EXECUTABLE} generate
+                -R=${ROOT_DIR}
+                -P=.goc
+                -C=.goc/cache
+                -G=.goc/generated
+                -I=${INCLUDE_JOINED}
+                -S=${SOURCES_JOINED}
+                -GPP=${GODOT_CPP_INCLUDE_DIRECTORIES_JOINED}
+                -E=${GDEXTENSION_API_FILE}
                 WORKING_DIRECTORY ${BINARY_DIR}
                 DEPENDS godot-cpp generate_bindings ${SOURCES}
                 COMMENT "GOC: Generating Bindings"

@@ -14,11 +14,11 @@ find_program(GIT git REQUIRED)
 
 # Ensure godot-cpp submodule has been updated
 if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/godot-cpp/src")
-    message(NOTICE "godot-cpp bindings source not found")
-    message(NOTICE "initializing/updating the godot-cpp submodule...")
+  message(NOTICE "godot-cpp bindings source not found")
+  message(NOTICE "initializing/updating the godot-cpp submodule...")
 
-    # update the c++ bindings submodule to populate it with the necessary source for the library
-    execute_process(
+  # update the c++ bindings submodule to populate it with the necessary source for the library
+  execute_process(
         COMMAND git submodule update --init godot-cpp
         WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
         COMMAND_ERROR_IS_FATAL ANY
@@ -55,6 +55,11 @@ target_sources(${LIBNAME}
     ${CMAKE_CURRENT_LIST_DIR}/src/example_class.h
 )
 
+target_include_directories(${LIBNAME}
+    PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/src
+)
+
 include(tools/autogoc.cmake)
 target_autogoc(${LIBNAME} ${CMAKE_CURRENT_LIST_DIR}/src)
 
@@ -63,9 +68,9 @@ file(GLOB_RECURSE DOC_XML LIST_DIRECTORIES NO CONFIGURE_DEPENDS "${PROJECT_SOURC
 
 # conditionally add doc data to compile output
 if(DOC_XML)
-    if(GODOTCPP_TARGET MATCHES "editor|template_debug")
-        target_doc_sources(${LIBNAME} ${DOC_XML})
-    endif()
+  if(GODOTCPP_TARGET MATCHES "editor|template_debug")
+    target_doc_sources(${LIBNAME} ${DOC_XML})
+  endif()
 endif()
 
 target_link_libraries(${LIBNAME} PRIVATE godot-cpp)

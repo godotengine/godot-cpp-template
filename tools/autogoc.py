@@ -41,9 +41,9 @@ def in_generated_sources(sources, root_path, generated_path):
     for source in sources:
         normalized = normalize_path(source)
         if (
-            normalized
-            and normalized.startswith(root_norm)
-            and normalized.endswith(".cpp")
+                normalized
+                and normalized.startswith(root_norm)
+                and normalized.endswith(".cpp")
         ):
             relative = normalized.removeprefix(root_norm)
             relative = relative.replace(".cpp", ".generated.cpp")
@@ -132,14 +132,30 @@ def create_goc_shared_library(env: Environment, lib_name: str, source, root_path
     )
     comma = ","
 
+    godot_cpp_include_dirs = []
+    additional_include_dirs = []
+
+    for include_dir in include_dirs:
+        if root_dir == include_dir:
+            continue
+        if "godot-cpp" in include_dir:
+            if "gdextension" in include_dir:
+                continue
+            godot_cpp_include_dirs.append(include_dir)
+        else:
+            additional_include_dirs.append(include_dir)
+    godot_cpp_path = find_godot_cpp_path(include_dirs)
+
     run_action = Action(
         f"{goc_path} generate \
             -P={goc_dir} \
             -C={cache_dir} \
             -G={generated_dir} \
-            -I={comma.join(str(f) for f in include_dirs)} \
+            -R={root_dir}\
+            -I={comma.join(str(f) for f in additional_include_dirs)} \
             -S={comma.join(str(f) for f in sources)} \
-            -R={root_dir}",
+            -E={godot_cpp_path}/gdextension/extension_api.json \
+            -GPP={comma.join(str(f) for f in godot_cpp_include_dirs)}",
         cmdstr="Godot Object Compiler: Generating bindings",
     )
 
@@ -150,9 +166,8 @@ def create_goc_shared_library(env: Environment, lib_name: str, source, root_path
     env.Alias("goc_generated", generated_source)
     env.Depends(run_goc, goc_path)
 
-    godot_cpp_path = find_godot_cpp_path(include_dirs)
     godot_cpp_lib = (
-        godot_cpp_path + "/bin/libgodot-cpp" + env["suffix"] + env["LIBSUFFIX"]
+            godot_cpp_path + "/bin/libgodot-cpp" + env["suffix"] + env["LIBSUFFIX"]
     )
 
     env.Depends(run_goc, godot_cpp_lib)
