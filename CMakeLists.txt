@@ -26,6 +26,9 @@ if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/godot-cpp/src")
 endif()
 add_subdirectory(godot-cpp SYSTEM)
 
+# Create the gen directory at configure time so IDEs can see generated headers immediately after generate_bindings
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/godot-cpp/gen/include")
+
 # Add godot-cpp's module path and include the exported functions.
 # This is made available for documentation generation
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${godot-cpp_SOURCE_DIR}/cmake")
