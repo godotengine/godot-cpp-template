@@ -38,11 +38,11 @@ compile_commands.json
 
 # Other stuff
 *.log
+.DS_Store
 
 # VSCode
 .vscode/*
 !.vscode/extensions.json
-.DS_Store
 
 # Jetbrains
 .idea/
