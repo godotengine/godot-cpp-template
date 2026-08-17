@@ -1,2 +1,8 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
+
+# Built shared libraries
+*.so       filter=lfs diff=lfs merge=lfs -text
+*.dll      filter=lfs diff=lfs merge=lfs -text
+*.dylib    filter=lfs diff=lfs merge=lfs -text
+*.wasm     filter=lfs diff=lfs merge=lfs -text
