@@ -8,6 +8,8 @@ endif()
 set(LIBNAME "EXTENSION-NAME") # "The name of the library"
 set(GODOT_PROJECT_DIR "project" CACHE STRING "The directory of a Godot project folder")
 
+set(GODOTCPP_API_VERSION "4.3")
+
 # Make sure all the dependencies are satisfied
 find_package(Python3 3.4 REQUIRED)
 find_program(GIT git REQUIRED)
